@@ -275,8 +275,8 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
             pertOutput.Cd = (pertOutput.Cd - nominalOutput.Cd) / 0.05;
             pertOutput.Cm = (pertOutput.Cm - nominalOutput.Cm) / 0.05;
 
-            pertOutput.Cl *= q * area * MAC / (2 * u0 * mass);
-            pertOutput.Cd *= q * area * MAC / (2 * u0 * mass);
+            pertOutput.Cl *= -q * area * MAC / (2 * u0 * mass); // Rodhern: Replaced 'q' by '-q', so that formulas
+            pertOutput.Cd *= -q * area * MAC / (2 * u0 * mass); //  for Zq and Xq match those for Zu and Xu.
             pertOutput.Cm *= q * area * MAC * MAC / (2 * u0 * Iy);
 
             stabDerivOutput.stabDerivs[9] = pertOutput.Cl;  //Zq
@@ -292,8 +292,8 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
             pertOutput.Cd = (pertOutput.Cd - nominalOutput.Cd) / 0.1;
             pertOutput.Cm = (pertOutput.Cm - nominalOutput.Cm) / 0.1;
 
-            pertOutput.Cl *= q * area / mass;
-            pertOutput.Cd *= q * area / mass;
+            pertOutput.Cl *= -q * area / mass; // Rodhern: Replaced 'q' by '-q', so that formulas
+            pertOutput.Cd *= -q * area / mass; //  for Ze and Xe match those for Zu and Xu.
             pertOutput.Cm *= q * area * MAC / Iy;
 
             stabDerivOutput.stabDerivs[12] = pertOutput.Cl; //Ze
