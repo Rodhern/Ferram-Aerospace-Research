@@ -141,15 +141,15 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
             AngVel += (sinPhi * alphaDot - cosAlpha * cosPhi * betaDot) * up;
 
             Vector3d velocity = forward * cosAlpha * cosBeta;
-            velocity += right * (sinPhi * sinAlpha * cosBeta + cosPhi * sinBeta); // Rodhern: Changed velocity 'right' and 'up' components 
+            velocity += right * (sinPhi * sinAlpha * cosBeta + cosPhi * sinBeta); // Rodhern: Changed velocity 'right' and 'up' components
             velocity += -up * (cosPhi * sinAlpha * cosBeta - sinPhi * sinBeta);   //  to align vector to naive forward direction.
-
-            // velocity.Normalize(); // Rodhern: Normalize should no longer be needed.
 
             //this is negative wrt the ground
             Vector3d liftVector = -forward * sinAlpha + right * sinPhi * cosAlpha - up * cosPhi * cosAlpha;
 
-            Vector3d sideways = Vector3.Cross(velocity, liftVector); // .normalized; // Rodhern: Normalize should no longer be needed.
+            Vector3d sideways = -forward * cosAlpha * sinBeta;
+            sideways += right * (cosPhi * cosBeta - sinPhi * sinAlpha * sinBeta); // Rodhern: The same as Vector3.Cross(velocity, liftVector)
+            sideways += up * (cosPhi * sinAlpha * sinBeta + sinPhi * cosBeta);    //  but possibly with better accuracy.
 
 
             for (int i = 0; i < _wingAerodynamicModel.Count; i++)
@@ -158,7 +158,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
                 if (!(w && w.part))
                     continue;
 
-                w.ComputeForceEditor(velocity.normalized, input.machNumber, 2);
+                w.ComputeForceEditor(velocity, input.machNumber, 2);
 
                 if (clear)
                     w.EditorClClear(reset_stall);
