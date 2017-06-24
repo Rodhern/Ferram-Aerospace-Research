@@ -99,6 +99,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
 
         public void Display()
         {
+            const int W160 = 160 + 20; // Rodhern: A width originally designed to be of size 160.
             //stabDerivHelp = GUILayout.Toggle(stabDerivHelp, "?", ButtonStyle, GUILayout.Width(200));
 
             GUILayout.Label("Flight Condition:");
@@ -160,10 +161,11 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
                     PopupDialog.SpawnPopupDialog(new Vector2(0, 0), new Vector2(0, 0), "Error!", "Altitude was above atmosphere", "OK", true, HighLogic.UISkin);
                 }
             }
+
             GUILayout.BeginHorizontal();
             GUILayout.Label("Aircraft Properties", GUILayout.Width(180));
-            GUILayout.Label("Moments of Inertia", GUILayout.Width(160));
-            GUILayout.Label("Products of Inertia", GUILayout.Width(160));
+            GUILayout.Label("Moments of Inertia", GUILayout.Width(W160));
+            GUILayout.Label("Products of Inertia", GUILayout.Width(W160));
             GUILayout.Label("Level Flight", GUILayout.Width(140));
             GUILayout.EndHorizontal();
 
@@ -175,13 +177,13 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
             GUILayout.EndVertical();
 
 
-            GUILayout.BeginVertical(GUILayout.Width(160));
+            GUILayout.BeginVertical(GUILayout.Width(W160));
             GUILayout.Label(new GUIContent("Ixx: " + stabDerivOutput.stabDerivs[0].ToString("G6") + " kg * m²", "Inertia about X-axis due to rotation about X-axis"));
             GUILayout.Label(new GUIContent("Iyy: " + stabDerivOutput.stabDerivs[1].ToString("G6") + " kg * m²", "Inertia about Y-axis due to rotation about Y-axis"));
             GUILayout.Label(new GUIContent("Izz: " + stabDerivOutput.stabDerivs[2].ToString("G6") + " kg * m²", "Inertia about Z-axis due to rotation about Z-axis"));
             GUILayout.EndVertical();
 
-            GUILayout.BeginVertical(GUILayout.Width(160));
+            GUILayout.BeginVertical(GUILayout.Width(W160));
             GUILayout.Label(new GUIContent("Ixy: " + stabDerivOutput.stabDerivs[24].ToString("G6") + " kg * m²", "Inertia about X-axis due to rotation about Y-axis; is equal to inertia about Y-axis due to rotation about X-axis"));
             GUILayout.Label(new GUIContent("Iyz: " + stabDerivOutput.stabDerivs[25].ToString("G6") + " kg * m²", "Inertia about Y-axis due to rotation about Z-axis; is equal to inertia about Z-axis due to rotation about Y-axis"));
             GUILayout.Label(new GUIContent("Ixz: " + stabDerivOutput.stabDerivs[26].ToString("G6") + " kg * m²", "Inertia about X-axis due to rotation about Z-axis; is equal to inertia about Z-axis due to rotation about X-axis"));
@@ -199,7 +201,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Longitudinal Derivatives", GUILayout.Width(160));
+            GUILayout.Label("Longitudinal Derivatives", GUILayout.Width(W160));
             GUILayout.EndHorizontal();
 
             GUIStyle BackgroundStyle = new GUIStyle(GUI.skin.box);
@@ -207,54 +209,54 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
 
             GUILayout.BeginVertical(BackgroundStyle);
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Down Vel Derivatives", GUILayout.Width(160));
-            GUILayout.Label("Fwd Vel Derivatives", GUILayout.Width(160));
-            GUILayout.Label("Pitch Rate Derivatives", GUILayout.Width(160));
-            GUILayout.Label("Pitch Ctrl Derivatives", GUILayout.Width(160));
+            GUILayout.Label("Down Vel Derivatives", GUILayout.Width(W160));
+            GUILayout.Label("Fwd Vel Derivatives", GUILayout.Width(W160));
+            GUILayout.Label("Pitch Rate Derivatives", GUILayout.Width(W160));
+            GUILayout.Label("Pitch Ctrl Derivatives", GUILayout.Width(W160));
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
-            StabilityLabel("Zw: ", stabDerivOutput.stabDerivs[3], " s⁻¹", "Change in Z-direction acceleration with respect to Z-direction velocity; should be negative", 160, -1);
-            StabilityLabel("Zu: ", stabDerivOutput.stabDerivs[6], " s⁻¹", "Change in Z-direction acceleration with respect to X-direction velocity; should be negative", 160, -1);
-            StabilityLabel("Zq: ", stabDerivOutput.stabDerivs[9], " m/s", "Change in Z-direction acceleration with respect to pitch-up rate; sign unimportant", 160, 0);
-            StabilityLabel("Zδe: ", stabDerivOutput.stabDerivs[12], " m/s²", "Change in Z-direction acceleration with respect to pitch control input; should be negative", 160, 0);
+            StabilityLabel("Zw: ", stabDerivOutput.stabDerivs[3], " s⁻¹", "Change in Z-direction acceleration with respect to Z-direction velocity; should be negative", W160, -1);
+            StabilityLabel("Zu: ", stabDerivOutput.stabDerivs[6], " s⁻¹", "Change in Z-direction acceleration with respect to X-direction velocity; should be negative", W160, -1);
+            StabilityLabel("Zq: ", stabDerivOutput.stabDerivs[9], " m/s", "Change in Z-direction acceleration with respect to pitch-up rate; sign unimportant", W160, 0);
+            StabilityLabel("Zδe: ", stabDerivOutput.stabDerivs[12], " m/s²", "Change in Z-direction acceleration with respect to pitch control input; should be negative", W160, 0);
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
-            StabilityLabel("Xw: ", stabDerivOutput.stabDerivs[4], " s⁻¹", "Change in X-direction acceleration with respect to Z-direction velocity; sign unimportant", 160, 0);
-            StabilityLabel("Xu: ", stabDerivOutput.stabDerivs[7], " s⁻¹", "Change in X-direction acceleration with respect to X-direction velocity; should be negative", 160, -1);
-            StabilityLabel("Xq: ", stabDerivOutput.stabDerivs[10], " m/s", "Change in X-direction acceleration with respect to pitch-up rate; sign unimportant", 160, 0);
-            StabilityLabel("Xδe: ", stabDerivOutput.stabDerivs[13], " m/s²", "Change in X-direction acceleration with respect to pitch control input; sign unimportant", 160, 0);
+            StabilityLabel("Xw: ", stabDerivOutput.stabDerivs[4], " s⁻¹", "Change in X-direction acceleration with respect to Z-direction velocity; sign unimportant", W160, 0);
+            StabilityLabel("Xu: ", stabDerivOutput.stabDerivs[7], " s⁻¹", "Change in X-direction acceleration with respect to X-direction velocity; should be negative", W160, -1);
+            StabilityLabel("Xq: ", stabDerivOutput.stabDerivs[10], " m/s", "Change in X-direction acceleration with respect to pitch-up rate; sign unimportant", W160, 0);
+            StabilityLabel("Xδe: ", stabDerivOutput.stabDerivs[13], " m/s²", "Change in X-direction acceleration with respect to pitch control input; sign unimportant", W160, 0);
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
-            StabilityLabel("Mw: ", stabDerivOutput.stabDerivs[5], " (m * s)⁻¹", "Change in pitch-up angular acceleration with respect to Z-direction velocity; should be negative", 160, -1);
-            StabilityLabel("Mu: ", stabDerivOutput.stabDerivs[8], " (m * s)⁻¹", "Change in pitch-up angular acceleration acceleration with respect to X-direction velocity; sign unimportant", 160, 0);
-            StabilityLabel("Mq: ", stabDerivOutput.stabDerivs[11], " s⁻¹", "Change in pitch-up angular acceleration acceleration with respect to pitch-up rate; should be negative", 160, -1);
-            StabilityLabel("Mδe: ", stabDerivOutput.stabDerivs[14], " s⁻²", "Change in pitch-up angular acceleration acceleration with respect to pitch control input; should be positive", 160, 1);
+            StabilityLabel("Mw: ", stabDerivOutput.stabDerivs[5], " (m * s)⁻¹", "Change in pitch-up angular acceleration with respect to Z-direction velocity; should be negative", W160, -1);
+            StabilityLabel("Mu: ", stabDerivOutput.stabDerivs[8], " (m * s)⁻¹", "Change in pitch-up angular acceleration acceleration with respect to X-direction velocity; sign unimportant", W160, 0);
+            StabilityLabel("Mq: ", stabDerivOutput.stabDerivs[11], " s⁻¹", "Change in pitch-up angular acceleration acceleration with respect to pitch-up rate; should be negative", W160, -1);
+            StabilityLabel("Mδe: ", stabDerivOutput.stabDerivs[14], " s⁻²", "Change in pitch-up angular acceleration acceleration with respect to pitch control input; should be positive", W160, 1);
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Lateral Derivatives", GUILayout.Width(160));
+            GUILayout.Label("Lateral Derivatives", GUILayout.Width(W160));
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Sideslip Derivatives", GUILayout.Width(160));
-            GUILayout.Label("Roll Rate Derivatives", GUILayout.Width(160));
-            GUILayout.Label("Yaw Rate Derivatives", GUILayout.Width(160));
+            GUILayout.Label("Sideslip Derivatives", GUILayout.Width(W160));
+            GUILayout.Label("Roll Rate Derivatives", GUILayout.Width(W160));
+            GUILayout.Label("Yaw Rate Derivatives", GUILayout.Width(W160));
             GUILayout.EndHorizontal();
             GUILayout.BeginVertical(BackgroundStyle);
             GUILayout.BeginHorizontal();
-            StabilityLabel("Yβ: ", stabDerivOutput.stabDerivs[15], " m/s²", "Change in Y-direction acceleration with respect to sideslip angle β; should be negative", 160, -1);
-            StabilityLabel("Yp: ", stabDerivOutput.stabDerivs[18], " m/s", "Change in Y-direction acceleration with respect to roll-right rate; sign unimportant", 160, 0);
-            StabilityLabel("Yr: ", stabDerivOutput.stabDerivs[21], " m/s", "Change in Y-direction acceleration with respect to yaw-right rate; should be positive", 160, 1);
+            StabilityLabel("Yβ: ", stabDerivOutput.stabDerivs[15], " m/s²", "Change in Y-direction acceleration with respect to sideslip angle β; should be negative", W160, -1);
+            StabilityLabel("Yp: ", stabDerivOutput.stabDerivs[18], " m/s", "Change in Y-direction acceleration with respect to roll-right rate; sign unimportant", W160, 0);
+            StabilityLabel("Yr: ", stabDerivOutput.stabDerivs[21], " m/s", "Change in Y-direction acceleration with respect to yaw-right rate; should be positive", W160, 1);
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
-            StabilityLabel("Lβ: ", stabDerivOutput.stabDerivs[16], " s⁻²", "Change in roll-right angular acceleration with respect to sideslip angle β; should be negative", 160, -1);
-            StabilityLabel("Lp: ", stabDerivOutput.stabDerivs[19], " s⁻¹", "Change in roll-right angular acceleration with respect to roll-right rate; should be negative", 160, -1);
-            StabilityLabel("Lr: ", stabDerivOutput.stabDerivs[22], " s⁻¹", "Change in roll-right angular acceleration with respect to yaw-right rate; should be positive", 160, 1);
+            StabilityLabel("Lβ: ", stabDerivOutput.stabDerivs[16], " s⁻²", "Change in roll-right angular acceleration with respect to sideslip angle β; should be negative", W160, -1);
+            StabilityLabel("Lp: ", stabDerivOutput.stabDerivs[19], " s⁻¹", "Change in roll-right angular acceleration with respect to roll-right rate; should be negative", W160, -1);
+            StabilityLabel("Lr: ", stabDerivOutput.stabDerivs[22], " s⁻¹", "Change in roll-right angular acceleration with respect to yaw-right rate; should be positive", W160, 1);
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
-            StabilityLabel("Nβ: ", stabDerivOutput.stabDerivs[17], " s⁻²", "Change in yaw-right angular acceleration with respect to sideslip angle β; should be positive", 160, 1);
-            StabilityLabel("Np: ", stabDerivOutput.stabDerivs[20], " s⁻¹", "Change in yaw-right angular acceleration with respect to roll-right rate; sign unimportant", 160, 0);
-            StabilityLabel("Nr: ", stabDerivOutput.stabDerivs[23], " s⁻¹", "Change in yaw-right angular acceleration with respect to yaw-right rate; should be negative", 160, -1);
+            StabilityLabel("Nβ: ", stabDerivOutput.stabDerivs[17], " s⁻²", "Change in yaw-right angular acceleration with respect to sideslip angle β; should be positive", W160, 1);
+            StabilityLabel("Np: ", stabDerivOutput.stabDerivs[20], " s⁻¹", "Change in yaw-right angular acceleration with respect to roll-right rate; sign unimportant", W160, 0);
+            StabilityLabel("Nr: ", stabDerivOutput.stabDerivs[23], " s⁻¹", "Change in yaw-right angular acceleration with respect to yaw-right rate; should be negative", W160, -1);
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
 
