@@ -226,6 +226,8 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
         #region EditorEvents
         private void ResetEditorEvent(ShipConstruct construct)
         {
+            FARAeroUtil.ResetEditorParts();
+
             if (EditorLogic.RootPart != null)
             {
                 List<Part> partsList = EditorLogic.SortedShipList;
