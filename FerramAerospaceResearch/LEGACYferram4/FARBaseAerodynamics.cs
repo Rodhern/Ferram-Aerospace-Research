@@ -59,7 +59,6 @@ namespace ferram4
         [KSPField(isPersistant = false, guiActive = false, guiName = "FARAbbrevCm")]
         public double Cm;
 
-                //protected float MachNumber = 0;
         protected Vector3d velocityEditor = Vector3.zero;
 
         protected Transform part_transform;
@@ -67,23 +66,13 @@ namespace ferram4
         protected static Ray ray;
         protected static RaycastHit hit;
 
-        //Reset tinting for this part and its children
- //       private bool resetTinting;
-
         [KSPField(isPersistant = false, guiActive = false)]
         public double S;
-
-        //[KSPField(isPersistant = false, guiActive = false, guiName = "S")]
-        //public float displayS;
-
 
         [KSPField(isPersistant = false, guiActive = false, guiActiveEditor = true)]
         public bool isShielded = true;
 
         public double rho;
-
-        // Keep track if the tinting effect is active or not
-        //private bool tintIsActive = false;
 
         public override void OnAwake()
         {
@@ -103,20 +92,6 @@ namespace ferram4
         {
             base.Initialization();
         }
-
-        /*public void ClearShielding()
-        {
-            isShielded = false;
-        }
-
-        public void ActivateShielding()
-        {
-            isShielded = true;
-            Cl = 0;
-            Cd = 0;
-            Cm = 0;
-        }*/
-
 
         public virtual Vector3d GetVelocity()
         {
@@ -149,12 +124,10 @@ namespace ferram4
             // Clear state when preparing CoL computation
         }
 
-        public virtual Vector3d PrecomputeCenterOfLift(Vector3d velocity, double MachNumber, double density, FARCenterQuery center)
+        public virtual Vector3d PrecomputeCenterOfLift(Vector3d velocity, FlightEnv fltenv, FARCenterQuery center)
         {
             return Vector3d.zero;
         }
-
-
 
         public static List<FARBaseAerodynamics> GetAllEditorModules()
         {
@@ -168,7 +141,7 @@ namespace ferram4
             return parts;
         }
 
-        public static void PrecomputeGlobalCenterOfLift(FARCenterQuery lift, FARCenterQuery dummy, Vector3 vel, double density)
+        public static void PrecomputeGlobalCenterOfLift(FARCenterQuery lift, FARCenterQuery dummy, Vector3 vel)
         {
             /* Center of lift is the location where the derivative of
                the total torque provided by aerodynamic forces relative to
@@ -184,16 +157,18 @@ namespace ferram4
                 ba.ResetCenterOfLift();
             }
 
+            FlightEnv defaultfltenv = FlightEnv.NewDefaultVal();
+
             // run computations twice to let things like flap interactions settle
             for (int i = 0; i < parts.Count; i++)
             {
                 FARBaseAerodynamics ba = parts[i];
-                ba.PrecomputeCenterOfLift(vel, 0.5, density, dummy);
+                ba.PrecomputeCenterOfLift(vel, defaultfltenv, dummy);
             }
             for (int i = 0; i < parts.Count; i++)
             {
                 FARBaseAerodynamics ba = parts[i];
-                ba.PrecomputeCenterOfLift(vel, 0.5, density, lift);
+                ba.PrecomputeCenterOfLift(vel, defaultfltenv, lift);
             }
         }
 

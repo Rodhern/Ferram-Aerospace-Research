@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using ferram4;
 
 namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
 {
@@ -14,12 +15,13 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
         private double neededCl; // this is the target for level flight
         private Vector3d CoM;
 
-        public InstantConditionSimVars(InstantConditionSim parent, double machNumber, double neededCl, double beta, double phi, int flap, bool spoilers)
+        public InstantConditionSimVars(InstantConditionSim parent, CelestialBody body, double altitude, double machNumber, double neededCl, double beta, double phi, int flap, bool spoilers)
         {
             this.parent = parent;
             this.neededCl = neededCl;
             this.CoM = parent.GetCoM();
-            iterationInput = new InstantConditionSimInput(0,beta,phi, 0,0,0, machNumber, 0, flap, spoilers);
+            FlightEnv fltenv = FlightEnv.NewSim(body, altitude, machNumber);
+            iterationInput = new InstantConditionSimInput(0,beta,phi, 0,0,0, fltenv, 0, flap, spoilers);
             iterationOutput = new InstantConditionSimOutput();
         }
 
@@ -126,18 +128,18 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
             }
             else if (Math.Abs(pitch1 - pitch0) < pitchtol.tol_linear)
             { // we think we roughly know the stable attitude yoke position
-                Debug.Log("[Rodhern] FAR: pitch determined (solve for alpha).");
+                Debug.Log("[Rodhern][FAR] pitch determined (solve for alpha).");
                 alpha1 = FindAlphaForPitch(pitch1);
             }
             else if (Math.Abs(alpha1 - alpha0) < alphatol.tol_linear)
             { // accept partial optimization
-                Debug.Log("[Rodhern] FAR: partial solution (alpha ~= " + alpha1 + ").");
+                Debug.Log("[Rodhern][FAR] partial solution (alpha ~= " + alpha1 + ").");
                 pitch1 = FindPitchForAlpha(alpha1);
                 alpha1 = FindAlphaForPitch(pitch1);
             }
             else
             { // level (but unstable) flight with yoke at neutral
-                Debug.Log("[Rodhern] FAR: fix pitch at zero (last alpha was " + alpha1 + ").");
+                Debug.Log("[Rodhern][FAR] fix pitch at zero (last alpha was " + alpha1 + ").");
                 pitch1 = 0;
                 alpha1 = FindAlphaForPitch(pitch1);
             }
@@ -164,7 +166,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
             {
                 AoAState = (iterationOutput.Cl > neededCl) ? "<" : ">";
             }
-            Debug.Log("[Rodhern] FAR: Cl needed: " + neededCl + ", AoAState: '" + AoAState + "'," + " AoA: " + alpha1 + ", pitch: " + pitch1
+            Debug.Log("[Rodhern][FAR] Cl needed: " + neededCl + ", AoAState: '" + AoAState + "'," + " AoA: " + alpha1 + ", pitch: " + pitch1
                       + ", Cl: " + iterationOutput.Cl + ", Cd: " + iterationOutput.Cd + ", Cm: " + iterationOutput.Cm + ".");
             
             resultinput = iterationInput.Clone(); // clone so that we do not give away our private variable reference

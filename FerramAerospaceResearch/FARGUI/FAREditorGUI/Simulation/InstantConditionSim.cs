@@ -253,8 +253,9 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
             FARCenterQuery center;
             ResetClCdCmSteady(CoM, input, out center, false, clear, reset_stall);
 
-            Vector3d velocity, liftDown, sideways, angVel;
+            Vector3d velocity, liftDown, sideways, angVel, velVector;
             GetAxisVectors(CoM, input, out velocity, out liftDown, out sideways, out angVel);
+            velVector = input.fltenv.VelocityVector(velocity);
 
             output = new InstantConditionSimOutput();
 
@@ -265,12 +266,12 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
                     continue;
 
                 Vector3d relPos = w.GetAerodynamicCenter() - CoM;
-                Vector3d vel = velocity + Vector3d.Cross(angVel, relPos);
-                Vector3d force = w.ComputeForceEditor(vel.normalized, input.machNumber, 2) * 1000;
+                Vector3d vel = velVector + Vector3d.Cross(angVel, relPos);
+                Vector3d force = w.ComputeForceEditor(vel, input.fltenv);
 
                 output.Cl += -Vector3d.Dot(force, liftDown);
-                output.Cy += Vector3d.Dot(force, sideways);
                 output.Cd += -Vector3d.Dot(force, velocity);
+                output.Cy += Vector3d.Dot(force, sideways);
 
                 Vector3d moment = -Vector3d.Cross(relPos, force);
 
@@ -279,25 +280,26 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
                 output.C_roll += Vector3d.Dot(moment, velocity);
             }
 
-            Vector3d centerForce = center.force * 1000;
+            Vector3d centerForce = center.force;
 
             output.Cl += -Vector3d.Dot(centerForce, liftDown);
-            output.Cy += Vector3d.Dot(centerForce, sideways);
             output.Cd += -Vector3d.Dot(centerForce, velocity);
+            output.Cy += Vector3d.Dot(centerForce, sideways);
 
-            Vector3d centerMoment = -center.TorqueAt(CoM) * 1000;
+            Vector3d centerMoment = -center.TorqueAt(CoM);
 
             output.Cm += Vector3d.Dot(centerMoment, sideways);
             output.Cn += Vector3d.Dot(centerMoment, liftDown);
             output.C_roll += Vector3d.Dot(centerMoment, velocity);
 
-            double recipArea = 1 / area;
-            output.Cl *= recipArea;
-            output.Cd *= recipArea;
-            output.Cm *= recipArea / MAC;
-            output.Cy *= recipArea;
-            output.Cn *= recipArea / b;
-            output.C_roll *= recipArea / b;
+            double q = input.fltenv.DynamicPressure();
+            double recip = 1 / (q * area); // reciprocal value to area and dynamic pressure
+            output.Cl *= recip;
+            output.Cd *= recip;
+            output.Cy *= recip;
+            output.Cm *= recip / MAC;
+            output.Cn *= recip / b;
+            output.C_roll *= recip / b;
         }
 
         /// <summary>
@@ -311,8 +313,9 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
 
         public void ResetClCdCmSteady(Vector3d CoM, InstantConditionSimInput input, out FARCenterQuery center, bool reset_cossweep, bool clear_clcd, bool reset_stall)
         {
-            Vector3d velocity, liftDown, sideways, angVel;
+            Vector3d velocity, liftDown, sideways, angVel, velVector;
             GetAxisVectors(CoM, input, out velocity, out liftDown, out sideways, out angVel);
+            velVector = input.fltenv.VelocityVector(velocity);
 
             if (reset_cossweep)
             for (int i = 0; i < _wingAerodynamicModel.Count; i++)
@@ -330,7 +333,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
                 if (!(w && w.part))
                     continue;
 
-                w.ComputeForceEditor(velocity, input.machNumber, 2);
+                w.ComputeForceEditor(velVector, input.fltenv);
             }
 
             if (clear_clcd)
@@ -350,20 +353,27 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
                     continue;
 
                 Vector3d relPos = w.GetAerodynamicCenter() - CoM;
-                Vector3d vel = velocity + Vector3d.Cross(angVel, relPos);
+                Vector3d vel = velVector + Vector3d.Cross(angVel, relPos);
 
                 if (w is FARControllableSurface)
                     (w as FARControllableSurface).SetControlStateEditor(CoM, vel, (float)input.pitchValue, 0, 0, input.flaps, input.spoilers);
                 else if (w.isShielded)
                     continue;
 
-                w.ComputeForceEditor(vel.normalized, input.machNumber, 2);
+                w.ComputeForceEditor(vel, input.fltenv);
             }
 
             center = new FARCenterQuery();
             for (int i = 0; i < _currentAeroSections.Count; i++)
             {
-                _currentAeroSections[i].PredictionCalculateAeroForces(2, (float)input.machNumber, 10000, 0, 0.005f, velocity, center);
+                // Rodhern: The hardcoded 2 for density is replaced, but some other parameters are still rough editor approximations.
+                float reynoldsPerUnitLength = 10000;
+                float pseudoKnudsenNumber = 0;
+                double pseudoLengthScale = 1;
+                float skinFrictionDrag = (float)input.fltenv.SkinFrictionDrag(pseudoLengthScale);
+                _currentAeroSections[i].PredictionCalculateAeroForces((float)input.fltenv.Rho, (float)input.fltenv.MachNumber,
+                                                                      reynoldsPerUnitLength, pseudoKnudsenNumber, skinFrictionDrag,
+                                                                      velVector, center);
             }
         }
 

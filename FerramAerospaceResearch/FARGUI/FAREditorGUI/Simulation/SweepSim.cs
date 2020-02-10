@@ -76,19 +76,19 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
             double[] LDValues = new double[(int)numPoints];
             double[] AlphaValues = new double[(int)numPoints];
 
-            InstantConditionSimInput input = new InstantConditionSimInput(aoAdegrees, 0, 0, 0, 0, 0, 0, pitch, flapSetting, spoilers);
+            InstantConditionSimInput input = new InstantConditionSimInput(aoAdegrees, 0, 0, 0, 0, 0, FlightEnv.NewDefaultVal(body), pitch, flapSetting, spoilers);
 
             for (int i = 0; i < numPoints; i++)
             {
-                input.machNumber = i / (double)numPoints * (upperBound - lowerBound) + lowerBound;
+                input.fltenv.MachNumber = i / (double)numPoints * (upperBound - lowerBound) + lowerBound;
 
-                if (input.machNumber == 0)
-                    input.machNumber = 0.001;
+                if (input.fltenv.MachNumber < 1E-3)
+                    input.fltenv.MachNumber = 1E-3;
 
                 InstantConditionSimOutput output;
 
                 _instantCondition.GetClCdCmSteady(input, out output, i == 0, false);
-                AlphaValues[i] = input.machNumber;
+                AlphaValues[i] = input.fltenv.MachNumber;
                 ClValues[i] = output.Cl;
                 CdValues[i] = output.Cd;
                 CmValues[i] = output.Cm;
@@ -111,10 +111,8 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
 
         public GraphData AngleOfAttackSweep(double machNumber, double pitch, double lowerBound, double upperBound, int numPoints, int flapSetting, bool spoilers, CelestialBody body)
         {
-            if (machNumber == 0)
-                machNumber = 0.001;
-
-            InstantConditionSimInput input = new InstantConditionSimInput(0, 0, 0, 0, 0, 0, machNumber, pitch, flapSetting, spoilers);
+            if (machNumber < 1E-3)
+                machNumber = 1E-3;
 
             FARAeroUtil.UpdateCurrentActiveBody(body);
 
@@ -129,6 +127,9 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
             double[] CdValues2 = new double[(int)numPoints];
             double[] CmValues2 = new double[(int)numPoints];
             double[] LDValues2 = new double[(int)numPoints];
+
+            InstantConditionSimInput input = new InstantConditionSimInput(0, 0, 0, 0, 0, 0, FlightEnv.NewDefaultVal(body), pitch, flapSetting, spoilers);
+            input.fltenv.MachNumber = machNumber;
 
             for (int i = 0; i < 2 * numPoints; i++)
             {
@@ -187,7 +188,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
             FARAeroUtil.ResetEditorParts();
 
             StaticAnalysisExportFile exportdata = new StaticAnalysisExportFile();
-            InstantConditionSimInput input = new InstantConditionSimInput(0, 0, 0, 0, 0, 0, 0, pitch, flapSetting, spoilers);
+            InstantConditionSimInput input = new InstantConditionSimInput(0, 0, 0, 0, 0, 0, FlightEnv.NewDefaultVal(body), pitch, flapSetting, spoilers);
             InstantConditionSimOutput output;
 
             Vector3d centerofmass = _instantCondition.GetCoM();
@@ -195,7 +196,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
             // Loop through each combination (two dimensions).
             foreach (float mach in exportdata.MachNumberList)
             {
-                input.machNumber = mach;
+                input.fltenv.MachNumber = mach;
                 input.alpha = 0; // zero is used as a neutral value for the reset
                 _instantCondition.ResetClCdCmSteady(centerofmass, input); // reset old results (particularly cossweep) that may not reflect the current mach number
 

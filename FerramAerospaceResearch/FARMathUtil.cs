@@ -460,12 +460,12 @@ namespace FerramAerospaceResearch
             {
                 if (tols.allowbrent)
                 {
-                    Debug.Log("[Rodhern] FAR: MirroredFunction (mirrored= " + mirror + ") reverting to BrentsMethod: " + dbgmsg);
+                    Debug.Log("[Rodhern][FAR] MirroredFunction (mirrored= " + mirror + ") reverting to BrentsMethod: " + dbgmsg);
                     return FARMathUtil.BrentsMethod(this.F, tols.leftedge, tols.rightedge, tols.tol_brent, tols.iterlim);
                 }
                 else
                 {
-                    Debug.Log("[Rodhern] FAR: MirroredFunction (mirrored= " + mirror + ") abandoned search: " + dbgmsg);
+                    Debug.Log("[Rodhern][FAR] MirroredFunction (mirrored= " + mirror + ") abandoned search: " + dbgmsg);
                     return Double.NaN;
                 }
             }

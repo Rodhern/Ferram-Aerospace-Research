@@ -43,6 +43,7 @@ Copyright 2017, Michael Ferrara, aka Ferram4
  */
 
 using System;
+using ferram4;
 
 namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
 {
@@ -54,14 +55,24 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
         public double alphaDot;
         public double betaDot;
         public double phiDot;
-        public double machNumber;
+        public FlightEnv fltenv;
         public double pitchValue;
         public int flaps;
         public bool spoilers;
 
-        public InstantConditionSimInput() { }
+        /// <summary>
+        /// The single parameter constructor creates an object that represents
+        /// an artificial default condition. This default condition is straight
+        /// and level flight, flaps and spoilers retracted, yoke centered, at
+        /// mach 0.5 in a 1-density (kg/m3) atmosphere (in Kerbin's case).
+        /// At Kerbin that is roughly travelling at altitude 1 km at 170 m/s.
+        /// </summary>
+        public InstantConditionSimInput(CelestialBody body)
+        {
+            this.fltenv = FlightEnv.NewDefaultVal(body);
+        }
 
-        public InstantConditionSimInput(double alpha, double beta, double phi, double alphaDot, double betaDot, double phiDot, double machNumber, double pitchValue, int flaps, bool spoilers)
+        public InstantConditionSimInput(double alpha, double beta, double phi, double alphaDot, double betaDot, double phiDot, FlightEnv fltenv, double pitchValue, int flaps, bool spoilers)
         {
             this.alpha = alpha;
             this.beta = beta;
@@ -69,7 +80,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
             this.alphaDot = alphaDot;
             this.betaDot = betaDot;
             this.phiDot = phiDot;
-            this.machNumber = machNumber;
+            this.fltenv = fltenv;
             this.pitchValue = pitchValue;
             this.flaps = flaps;
             this.spoilers = spoilers;
@@ -77,7 +88,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
 
         public InstantConditionSimInput Clone()
         {
-            return new InstantConditionSimInput(alpha, beta, phi, alphaDot, betaDot, phiDot, machNumber, pitchValue, flaps, spoilers);
+            return new InstantConditionSimInput(alpha, beta, phi, alphaDot, betaDot, phiDot, fltenv.Clone(), pitchValue, flaps, spoilers);
         }
     }
 }

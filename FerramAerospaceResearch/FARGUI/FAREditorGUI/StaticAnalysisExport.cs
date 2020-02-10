@@ -166,7 +166,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
                             aoadeglist = CopyToArray(mvalues);
                             break;
                         default:
-                            Debug.Log("[Rodhern] FAR: Matrix named '" + mname + "' (" + mvalues.GetLength(0) + " x " + mvalues.GetLength(1) + ") ignored;"
+                            Debug.Log("[Rodhern][FAR] Matrix named '" + mname + "' (" + mvalues.GetLength(0) + " x " + mvalues.GetLength(1) + ") ignored;"
                                     + " only variables named 'mach' and 'aoa' are considered when loading static analysis export configuration.");
                             break;
                     }

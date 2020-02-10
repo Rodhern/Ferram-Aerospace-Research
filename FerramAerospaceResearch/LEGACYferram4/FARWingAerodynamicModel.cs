@@ -57,6 +57,194 @@ using KSP.Localization;
 
 namespace ferram4
 {
+    /// <summary>
+    /// Rho context for 'Calculate Forces'.
+    /// Enum can be removed when debugging is over with. :-)
+    /// Whenever we are in the flight scene rho should be known.
+    /// By nature, in the editor rho is more or less entirely contrived.
+    /// Note: Rho is important for dynamic pressure and skin friction.
+    ///  FlightSceneKnown: In the flight scene rho is known.
+    ///  FlightScenePredicted: In flight, but with estimated (default) rho.
+    ///  EditorPresumed: Often we believe we know rho, even in the editor.
+    ///  EditorDummy: In some cases a hardcoded dummy value is used for in-editor calculations.
+    /// </summary>
+    public enum RhoContext { FlightSceneKnown, FlightScenePredicted, EditorPresumed, EditorDummy };
+
+
+    /// <summary>
+    /// The nescessary flight environment information used to determine
+    /// aircraft performance. Such as air density and speed for dynamic
+    /// pressure and skin friction drag coefficient.
+    /// </summary>
+    public class FlightEnv
+    {
+        private RhoContext context; // used for debug
+        private CelestialBody body;
+        private double atmAdiabaticIdx; // adiabatic index (for skin friction drag calculation)
+        private double mach;
+        private double pressure;
+        private double temperature;
+        private double density;
+        private double speed;
+
+        /// <summary>
+        /// In the flight scene every parameter is basically known.
+        /// The environment is mostly determined from the vessel, but is
+        /// further given the speed scalar and air density for the part in
+        /// question.
+        /// </summary>
+        public FlightEnv(Vessel vessel, double part_speed, double part_rho)
+        {
+            this.context = RhoContext.FlightSceneKnown;
+            this.body = vessel.mainBody;
+            if (this.body == null)
+                Debug.LogError("[Rodhern][FAR] FlightEnv reference 'vessel.mainBody' was unassigned.");
+            atmAdiabaticIdx = body.atmosphereAdiabaticIndex;
+            pressure = vessel.staticPressurekPa; // Rodhern: Not actually used, which is why we can get away with just blindly copying 'vessel.staticPressurekPa'.
+            temperature = vessel.externalTemperature;
+            mach = vessel.mach;
+            density = part_rho;
+            speed = part_speed;
+        }
+
+        /// <summary>
+        /// Partially initialize new FlightEnv object.
+        /// </summary>
+        private FlightEnv(RhoContext context)
+        {
+            this.context = context;
+        }
+
+        /// <summary>
+        /// Simulated aero properties (used by KSPTrajectories) might as well
+        /// use default atmosphere values (including outside temperature).
+        /// </summary>
+        public static FlightEnv NewPredicted(CelestialBody body, double altitude, double machNumber)
+        {
+            FlightEnv obj = new FlightEnv(RhoContext.FlightScenePredicted);
+            obj.SetBodySpeedAndAltitude(body, altitude, machNumber);
+            return obj;
+        }
+
+        /// <summary>
+        /// Specific editor scenarios should use straight default values that
+        /// match up with the corresponding InstantConditionSimInput.
+        /// </summary>
+        public static FlightEnv NewSim(CelestialBody body, double altitude, double machNumber)
+        {
+            FlightEnv obj = new FlightEnv(RhoContext.EditorPresumed);
+            obj.SetBodySpeedAndAltitude(body, altitude, machNumber);
+            return obj;
+        }
+
+        /// <summary>
+        /// Get the artificial default condition parameter set.
+        /// For Kerbin it is aprox. flight at 1 km altitude.
+        /// For other bodies it is flight at 'sea level'.
+        /// The default mach number is 0.5.
+        /// </summary>
+        public static FlightEnv NewDefaultVal(CelestialBody body)
+        {
+            FlightEnv obj = new FlightEnv(RhoContext.EditorDummy);
+            if (body == null || body.isHomeWorld)
+                obj.SetDummyDefault();
+            else
+                obj.SetBodySpeedAndAltitude(body, 0, 0.5);
+            return obj;
+        }
+
+        /// <summary>
+        /// Get the artificial default condition parameter set.
+        /// The density is 1 kg/m^3.
+        /// </summary>
+        public static FlightEnv NewDefaultVal()
+        {
+            return NewDefaultVal(null);
+        }
+
+        private void SetBodySpeedAndAltitude(CelestialBody body, double altitude, double machNumber)
+        {
+            this.body = body;
+            if (this.body == null)
+                Debug.LogError("[Rodhern][FAR] FltEnv was passed null as celestial body in context '" + context.ToString() + "'.");
+            atmAdiabaticIdx = body.atmosphereAdiabaticIndex;
+            mach = machNumber;
+            pressure = body.GetPressure(altitude);
+            temperature = body.GetTemperature(altitude);
+            density = body.GetDensity(pressure, temperature);
+            speed = mach * body.GetSpeedOfSound(pressure, density);
+        }
+
+        private void SetDummyDefault()
+        {
+            body = null; atmAdiabaticIdx = 1.4;
+            pressure = 80; temperature = 280;
+            density = 1; MachNumber = 0.5;
+        }
+
+        public FlightEnv Clone()
+        {
+            FlightEnv obj = new FlightEnv(context);
+            obj.body = body;
+            obj.atmAdiabaticIdx = atmAdiabaticIdx;
+            obj.mach = mach;
+            obj.pressure = pressure;
+            obj.temperature = temperature;
+            obj.density = density;
+            obj.speed = speed;
+            return obj;
+        }
+
+        /// <summary>
+        /// The aircraft mach number.
+        /// </summary>
+        public double MachNumber
+        { get { return mach;}
+          set {
+              mach = value;
+              double speedofsound = (this.body == null) ? 340 : // dummy default is 340 m/s
+                      body.GetSpeedOfSound(pressure, density);
+              speed = mach * speedofsound;
+              }
+        }
+
+        /// <summary>
+        /// The precomputed density parameter.
+        /// </summary>
+        public double Rho { get { return density;} }
+
+        /// <summary>
+        /// Dynamic pressure in kPa.
+        /// </summary>
+        public double DynamicPressure()
+        {
+            return 0.5 * density * speed * speed / 1000;
+        }
+
+        /// <summary>
+        /// Combine the recorded parameters with the given length scale
+        /// parameter and calculate the skin friction drag.
+        /// </summary>
+        public double SkinFrictionDrag(double lengthScale)
+        {
+            return FARAeroUtil.SkinFrictionDrag(density, lengthScale, speed, mach, temperature, atmAdiabaticIdx);
+        }
+
+        /// <summary>
+        /// Given a velocity direction vector, return a scaled copy.
+        /// The resultant vector magnitude is equal to 'speed'.
+        /// </summary>
+        public Vector3d VelocityVector(Vector3d velocitydir)
+        {
+            double magnitude = velocitydir.magnitude;
+            if (magnitude > 0)
+                return speed/magnitude * velocitydir;
+            else
+                return Vector3d.zero;
+        }
+    }
+
+
     public class FARWingAerodynamicModel : FARBaseAerodynamics, TweakScale.IRescalable<FARWingAerodynamicModel>, ILiftProvider, IPartMassModifier
     {
         public double rawAoAmax = 15;
@@ -308,20 +496,11 @@ namespace ferram4
 
         #region Editor Functions
 
-        public Vector3d ComputeForceEditor(Vector3d velocityVector, double M, double density)
+        public Vector3d ComputeForceEditor(Vector3d velocityVector, FlightEnv fltenv)
         {
-            velocityEditor = velocityVector;
-            rho = density;
+            velocityEditor = velocityVector.normalized;
             double AoA = CalculateAoA(velocityVector);
-            return CalculateForces(velocityVector, M, AoA, density, true);
-        }
-        
-        public void ComputeClCdEditor(Vector3d velocityVector, double M, double density)
-        {
-            velocityEditor = velocityVector;
-            rho = density;
-            double AoA = CalculateAoA(velocityVector);
-            CalculateForces(velocityVector, M, AoA, density, true);
+            return CalculateForcesEditor(velocityVector, AoA, fltenv, 1, true);
         }
 
         protected override void ResetCenterOfLift()
@@ -330,13 +509,13 @@ namespace ferram4
             stall = 0;
         }
 
-        public override Vector3d PrecomputeCenterOfLift(Vector3d velocity, double MachNumber, double density, FARCenterQuery center)
+        public override Vector3d PrecomputeCenterOfLift(Vector3d velocity, FlightEnv fltenv, FARCenterQuery center)
         {
             try
             {
                 double AoA = CalculateAoA(velocity);
 
-                Vector3d force = CalculateForces(velocity, MachNumber, AoA, density, double.PositiveInfinity, false);
+                Vector3d force = CalculateForcesEditor(velocity, AoA, fltenv, double.PositiveInfinity, false);
                 center.AddForce(AerodynamicCenter, force);
 
                 return force;
@@ -436,8 +615,6 @@ namespace ferram4
                 part.OnEditorAttach += OnWingAttach;
                 part.OnEditorDetach += OnWingDetach;
             }
-
-
 
             OnVesselPartsChange += UpdateThisWingInteractions;
             ready = true;
@@ -564,19 +741,18 @@ namespace ferram4
                     Vector3d velocity = rb.GetPointVelocity(CurWingCentroid) + Krakensbane.GetFrameVelocity()
                         - FARWind.GetWind(FlightGlobals.currentMainBody, part, rb.position);
 
-                    double machNumber, v_scalar = velocity.magnitude;
+                    double v_scalar = velocity.magnitude;
 
                     if (vessel.mainBody.ocean)
                         rho = (vessel.mainBody.oceanDensity * 1000 * part.submergedPortion + part.atmDensity * (1 - part.submergedPortion));
                     else
                         rho = part.atmDensity;
 
-                    machNumber = vessel.mach;
                     if (rho > 0 && v_scalar > 0.1)
                     {
                         double AoA = CalculateAoA(velocity);
                         double failureForceScaling = FARAeroUtil.GetFailureForceScaling(vessel);
-                        Vector3d force = DoCalculateForces(velocity, machNumber, AoA, rho, failureForceScaling, true);
+                        Vector3d force = DoCalculateForces(velocity, AoA, new FlightEnv(vessel, v_scalar, rho), failureForceScaling, true);
 
                         worldSpaceForce = force;
 
@@ -665,6 +841,7 @@ namespace ferram4
                                 if (FARDebugValues.aeroFailureExplosions)
                                     FXMonger.Explode(part, AerodynamicCenter, 1);
                             }
+
                         part.AddForceAtPosition(force, AerodynamicCenter);
                         //rb.AddForceAtPosition(force, AerodynamicCenter);            //and apply force
                     }
@@ -700,22 +877,14 @@ namespace ferram4
             }
         }
 
-        //This version also updates the wing centroid
-        public Vector3d CalculateForces(Vector3d velocity, double MachNumber, double AoA, double rho, bool updateAeroArrows)
+        public Vector3d CalculateForcesEditor(Vector3d velocity, double AoA, FlightEnv fltenv, double failureForceScaling, bool updateAeroArrows)
         {
             CurWingCentroid = WingCentroid();
 
-            return DoCalculateForces(velocity, MachNumber, AoA, rho, 1, updateAeroArrows);
+            return DoCalculateForces(velocity, AoA, fltenv, failureForceScaling, updateAeroArrows);
         }
 
-        public Vector3d CalculateForces(Vector3d velocity, double MachNumber, double AoA, double rho, double failureForceScaling, bool updateAeroArrows)
-        {
-            CurWingCentroid = WingCentroid();
-
-            return DoCalculateForces(velocity, MachNumber, AoA, rho, failureForceScaling, updateAeroArrows);
-        }
-
-        private Vector3d DoCalculateForces(Vector3d velocity, double MachNumber, double AoA, double rho, double failureForceScaling, bool updateAeroArrows)
+        private Vector3d DoCalculateForces(Vector3d velocity, double AoA, FlightEnv fltenv, double failureForceScaling, bool updateAeroArrows)
         {
             //This calculates the angle of attack, adjusting the part's orientation for any deflection
             //CalculateAoA();
@@ -727,7 +896,7 @@ namespace ferram4
             Vector3 forward = part_transform.forward;
             Vector3d velocity_normalized = velocity / v_scalar;
 
-            double q = rho * v_scalar * v_scalar * 0.0005;   //dynamic pressure, q
+            double q = fltenv.Rho * v_scalar * v_scalar * 0.0005;   //dynamic pressure, q
 
             ParallelInPlane = Vector3d.Exclude(forward, velocity).normalized;  //Projection of velocity vector onto the plane of the wing
             perp = Vector3d.Cross(forward, ParallelInPlane).normalized;       //This just gives the vector to cross with the velocity vector
@@ -736,19 +905,15 @@ namespace ferram4
             ParallelInPlaneLocal = part_transform.InverseTransformDirection(ParallelInPlane);
 
             // Calculate the adjusted AC position (uses ParallelInPlane)
-            AerodynamicCenter = CalculateAerodynamicCenter(MachNumber, AoA, CurWingCentroid);
+            AerodynamicCenter = CalculateAerodynamicCenter(fltenv.MachNumber, AoA, CurWingCentroid);
 
             //Throw AoA into lifting line theory and adjust for part exposure and compressibility effects
 
-            double skinFrictionDrag;
-            if(HighLogic.LoadedSceneIsFlight)
-                skinFrictionDrag = FARAeroUtil.SkinFrictionDrag(rho, effective_MAC, v_scalar, MachNumber, vessel.externalTemperature, vessel.mainBody.atmosphereAdiabaticIndex);
-            else
-                skinFrictionDrag = 0.005;
+            double skinFrictionDrag = fltenv.SkinFrictionDrag(effective_MAC);
 
             skinFrictionDrag *= 1.1;    //account for thickness
 
-            CalculateCoefficients(MachNumber, AoA, skinFrictionDrag);
+            CalculateCoefficients(fltenv.MachNumber, AoA, skinFrictionDrag);
 
 
             //lift and drag vectors
@@ -962,9 +1127,8 @@ namespace ferram4
             if (double.IsNaN(beta) || beta < 0.66332495807107996982298654733414)
                 beta = 0.66332495807107996982298654733414;
 
-            double TanSweep = Math.Sqrt(FARMathUtil.Clamp(1 - cosSweepAngle * cosSweepAngle, 0, 1)) / cosSweepAngle;//Math.Tan(FARMathUtil.Clamp(Math.Acos(cosSweepAngle), 0, Math.PI * 0.5));
+            double TanSweep = Math.Sqrt(FARMathUtil.Clamp(1 - cosSweepAngle * cosSweepAngle, 0, 1)) / cosSweepAngle;
             double beta_TanSweep = beta / TanSweep;
-
 
             double Cd0 = CdCompressibilityZeroLiftIncrement(MachNumber, cosSweepAngle, TanSweep, beta_TanSweep, beta) + 2 * skinFrictionCoefficient;
             double CdMax = CdMaxFlatPlate(MachNumber, beta);
@@ -973,13 +1137,10 @@ namespace ferram4
 
             double CosAoA = Math.Cos(AoA);
 
-            //Debug.Log("Part: " + part.partInfo.title + " Liftslope: " + liftslope);
-
             if (MachNumber <= 0.8)
             {
                 double Cn = liftslope;
                 finalLiftSlope = liftslope;
-                //Cl = Cn * Math.Sin(2 * AoA) * 0.5;
                 double sinAoA = Math.Sqrt(FARMathUtil.Clamp(1 - CosAoA * CosAoA, 0, 1));
                 Cl = Cn * CosAoA * Math.Sign(AoA);
 
@@ -1053,7 +1214,6 @@ namespace ferram4
 
                 double supersonicLiftSlope = coefMult * normalForce * supersonicLENormalForceFactor * supScale;
                 finalLiftSlope += supersonicLiftSlope;
-
 
                 Cl += CosAoA * Math.Sign(AoA) * supersonicLiftSlope;
 

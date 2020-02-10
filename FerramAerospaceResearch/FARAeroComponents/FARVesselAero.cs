@@ -62,10 +62,10 @@ namespace FerramAerospaceResearch.FARAeroComponents
             get { return _vehicleAero.Length; }
         }
 
-		public bool isValid
-		{
-			get { return enabled && _vehicleAero != null; }
-		}
+        public bool isValid
+        {
+            get { return enabled && _vehicleAero != null; }
+        }
 
         public double MaxCrossSectionArea
         {
@@ -269,9 +269,9 @@ namespace FerramAerospaceResearch.FARAeroComponents
 
             machNumber = vessel.mach;
             reynoldsNumber = FARAeroUtil.CalculateReynoldsNumber(vessel.atmDensity, Length, vessel.srfSpeed, machNumber, FlightGlobals.getExternalTemperature((float)vessel.altitude, vessel.mainBody), vessel.mainBody.atmosphereAdiabaticIndex);
-            float skinFrictionDragCoefficient = (float)FARAeroUtil.SkinFrictionDrag(reynoldsNumber, machNumber);
-
+            float reynoldsPerLength = (float)(reynoldsNumber / Length);
             float pseudoKnudsenNumber = (float)(machNumber / (reynoldsNumber + machNumber));
+            float skinFrictionDragCoefficient = (float)FARAeroUtil.SkinFrictionDrag(reynoldsNumber, machNumber);
 
             Vector3 frameVel = Krakensbane.GetFrameVelocityV3f();
 
@@ -295,7 +295,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
                 }*/
             
             for (int i = 0; i < _currentAeroSections.Count; i++)
-                _currentAeroSections[i].FlightCalculateAeroForces(atmDensity, (float)machNumber, (float)(reynoldsNumber / Length), pseudoKnudsenNumber, skinFrictionDragCoefficient);
+                _currentAeroSections[i].FlightCalculateAeroForces(atmDensity, (float)machNumber, reynoldsPerLength, pseudoKnudsenNumber, skinFrictionDragCoefficient);
 
             _vesselIntakeRamDrag.ApplyIntakeRamDrag((float)machNumber, vessel.srf_velocity.normalized, (float)vessel.dynamicPressurekPa);
 
@@ -331,11 +331,9 @@ namespace FerramAerospaceResearch.FARAeroComponents
             float velocityMag = velocityWorldVector.magnitude;
             float machNumber = velocityMag / speedOfSound;
             float reynoldsNumber = (float)FARAeroUtil.CalculateReynoldsNumber(density, Length, velocityMag, machNumber, temperature, body.atmosphereAdiabaticIndex);
-
             float reynoldsPerLength = reynoldsNumber / (float)Length;
-            float skinFriction = (float)FARAeroUtil.SkinFrictionDrag(reynoldsNumber, machNumber);
-
             float pseudoKnudsenNumber = machNumber / (reynoldsNumber + machNumber);
+            float skinFriction = (float)FARAeroUtil.SkinFrictionDrag(reynoldsNumber, machNumber);
 
             for (int i = 0; i < _currentAeroSections.Count; i++)
             {
@@ -348,7 +346,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
             {
                 FARWingAerodynamicModel curWing = _legacyWingModels[i];
                 if ((object)curWing != null)
-                    curWing.PrecomputeCenterOfLift(velocityWorldVector, machNumber, density, center);
+                    curWing.PrecomputeCenterOfLift(velocityWorldVector, FlightEnv.NewPredicted(vessel.mainBody, altitude, machNumber), center); // Rodhern: It seems that this method, 'SimulateAeroProperties', is only used in FARAPI, which in turn can be used by say KSPTrajectories.
             }
 
             aeroForce = center.force;

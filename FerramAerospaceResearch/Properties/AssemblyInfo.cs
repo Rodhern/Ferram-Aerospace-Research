@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 //[assembly: AssemblyCompany("Microsoft")]
 [assembly: AssemblyProduct("FerramAerospaceResearch")]
-[assembly: AssemblyCopyright("Copyright © Michael Ferrara et al. 2019")]
+[assembly: AssemblyCopyright("Copyright © Michael Ferrara et al. 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: KSPAssembly("FerramAerospaceResearch", 0, 15)]

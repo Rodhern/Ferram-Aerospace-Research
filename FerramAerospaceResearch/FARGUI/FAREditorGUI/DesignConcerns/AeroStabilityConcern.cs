@@ -60,16 +60,15 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.DesignConcerns
         {
             _instantSim = instantSim;
             _editorFacility = editorFacility;
-            _simInput = new InstantConditionSimInput();
+            _simInput = new InstantConditionSimInput(null);
         }
 
         public override bool TestCondition()
         {
             if (EditorLogic.SortedShipList.Count > 0 && _instantSim.Ready)
             {
-                _simInput.alpha = -1;
-                _simInput.machNumber = 0.5;
                 InstantConditionSimOutput output;
+                _simInput.alpha = -1;
                 _instantSim.GetClCdCmSteady(_simInput, out output, true, true);
 
                 double Cm_1 = output.Cm;

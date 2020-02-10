@@ -83,7 +83,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
             double neededCl = effectiveG * mass / (q * area);
 
             InstantConditionSimVars iterationSimVars =
-                new InstantConditionSimVars(_instantCondition, machNumber, neededCl, beta, phi, flapSetting, spoilers);
+                new InstantConditionSimVars(_instantCondition, body, alt, machNumber, neededCl, beta, phi, flapSetting, spoilers);
             InstantConditionSimInput nominalInput;
             InstantConditionSimOutput nominalOutput;
             InstantConditionSimIterationResult stableCondition =
@@ -121,7 +121,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
 
 
             input.alpha = stableCondition.stableAoA;
-            input.machNumber = machNumber + 0.05;
+            input.fltenv.MachNumber = machNumber + 0.05;
             iterationSimVars.ResetAndGetClCdCmSteady(input, out pertOutput);
 
             pertOutput.Cl = (pertOutput.Cl - nominalOutput.Cl) / 0.05 * machNumber;                   //fwd vel derivs
@@ -133,14 +133,14 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
 
             pertOutput.Cl *= -q * area / (mass * u0);
             pertOutput.Cd *= -q * area / (mass * u0);
-            pertOutput.Cm *= q * area * MAC / (u0 * Iy);
+            pertOutput.Cm *= q * area * MAC / (Iy * u0);
 
             derivatives[6] = pertOutput.Cl;  //Zu
             derivatives[7] = pertOutput.Cd;  //Xu
             derivatives[8] = pertOutput.Cm;  //Mu
 
 
-            input.machNumber = machNumber;
+            input.fltenv.MachNumber = machNumber;
             input.alphaDot = -0.05;
             iterationSimVars.ResetAndGetClCdCmSteady(input, out pertOutput);
 
@@ -212,10 +212,10 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
             input.phiDot = 0;
             input.betaDot = -0.05;
             iterationSimVars.ResetAndGetClCdCmSteady(input, out pertOutput);
-            
-            pertOutput.Cy = (pertOutput.Cy - nominalOutput.Cy) / 0.05f;                   //yaw rate derivs
-            pertOutput.Cn = (pertOutput.Cn - nominalOutput.Cn) / 0.05f;
-            pertOutput.C_roll = (pertOutput.C_roll - nominalOutput.C_roll) / 0.05f;
+
+            pertOutput.Cy = (pertOutput.Cy - nominalOutput.Cy) / 0.05;                   //yaw rate derivs
+            pertOutput.Cn = (pertOutput.Cn - nominalOutput.Cn) / 0.05;
+            pertOutput.C_roll = (pertOutput.C_roll - nominalOutput.C_roll) / 0.05;
 
             pertOutput.Cy *= q * area * b / (2 * mass * u0);
             pertOutput.Cn *= q * area * b * b / (2 * Iz * u0);
@@ -226,7 +226,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
             derivatives[22] = pertOutput.C_roll; //Lr
 
 
-            input = new InstantConditionSimInput(); // Reset to (an artificial) zero condition
+            input = new InstantConditionSimInput(body); // Reset to (an artificial) default condition
             _instantCondition.ResetClCdCmSteady(CoM, input);
 
             // Assign values to output variables
