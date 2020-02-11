@@ -141,16 +141,16 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
 
 
             input.fltenv.MachNumber = machNumber;
-            input.alphaDot = -0.05;
+            input.alphaDot = -3;
             iterationSimVars.ResetAndGetClCdCmSteady(input, out pertOutput);
 
-            pertOutput.Cl = (pertOutput.Cl - nominalOutput.Cl) / 0.05;                   //pitch rate derivs
-            pertOutput.Cd = (pertOutput.Cd - nominalOutput.Cd) / 0.05;
-            pertOutput.Cm = (pertOutput.Cm - nominalOutput.Cm) / 0.05;
+            pertOutput.Cl = (pertOutput.Cl - nominalOutput.Cl) / (3 * FARMathUtil.deg2rad);                   //pitch rate derivs
+            pertOutput.Cd = (pertOutput.Cd - nominalOutput.Cd) / (3 * FARMathUtil.deg2rad);
+            pertOutput.Cm = (pertOutput.Cm - nominalOutput.Cm) / (3 * FARMathUtil.deg2rad);
 
-            pertOutput.Cl *= -q * area * MAC / (2 * u0 * mass); // Rodhern: Replaced 'q' by '-q', so that formulas
-            pertOutput.Cd *= -q * area * MAC / (2 * u0 * mass); //  for Zq and Xq match those for Zu and Xu.
-            pertOutput.Cm *= q * area * MAC * MAC / (2 * u0 * Iy);
+            pertOutput.Cl *= -q * area / mass;
+            pertOutput.Cd *= -q * area / mass;
+            pertOutput.Cm *= q * area * MAC / Iy;
 
             derivatives[9] = pertOutput.Cl;  //Zq
             derivatives[10] = pertOutput.Cd; //Xq
@@ -193,16 +193,16 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
 
 
             input.beta = beta;
-            input.phiDot = -0.05;
+            input.phiDot = -3;
             iterationSimVars.ResetAndGetClCdCmSteady(input, out pertOutput);
 
-            pertOutput.Cy = (pertOutput.Cy - nominalOutput.Cy) / 0.05;                   //roll rate derivs
-            pertOutput.Cn = (pertOutput.Cn - nominalOutput.Cn) / 0.05;
-            pertOutput.C_roll = (pertOutput.C_roll - nominalOutput.C_roll) / 0.05;
+            pertOutput.Cy = (pertOutput.Cy - nominalOutput.Cy) / (3 * FARMathUtil.deg2rad);                   //roll rate derivs
+            pertOutput.Cn = (pertOutput.Cn - nominalOutput.Cn) / (3 * FARMathUtil.deg2rad);
+            pertOutput.C_roll = (pertOutput.C_roll - nominalOutput.C_roll) / (3 * FARMathUtil.deg2rad);
 
-            pertOutput.Cy *= q * area * b / (2 * mass * u0);
-            pertOutput.Cn *= q * area * b * b / (2 * Iz * u0);
-            pertOutput.C_roll *= q * area * b * b / (2 * Ix * u0);
+            pertOutput.Cy *= q * area / mass;
+            pertOutput.Cn *= q * area * b / Iz;
+            pertOutput.C_roll *= q * area * b / Ix;
 
             derivatives[18] = pertOutput.Cy;     //Yp
             derivatives[20] = pertOutput.Cn;     //Np
@@ -210,16 +210,16 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
 
 
             input.phiDot = 0;
-            input.betaDot = -0.05;
+            input.betaDot = -3;
             iterationSimVars.ResetAndGetClCdCmSteady(input, out pertOutput);
 
-            pertOutput.Cy = (pertOutput.Cy - nominalOutput.Cy) / 0.05;                   //yaw rate derivs
-            pertOutput.Cn = (pertOutput.Cn - nominalOutput.Cn) / 0.05;
-            pertOutput.C_roll = (pertOutput.C_roll - nominalOutput.C_roll) / 0.05;
+            pertOutput.Cy = (pertOutput.Cy - nominalOutput.Cy) / (3 * FARMathUtil.deg2rad);                   //yaw rate derivs
+            pertOutput.Cn = (pertOutput.Cn - nominalOutput.Cn) / (3 * FARMathUtil.deg2rad);
+            pertOutput.C_roll = (pertOutput.C_roll - nominalOutput.C_roll) / (3 * FARMathUtil.deg2rad);
 
-            pertOutput.Cy *= q * area * b / (2 * mass * u0);
-            pertOutput.Cn *= q * area * b * b / (2 * Iz * u0);
-            pertOutput.C_roll *= q * area * b * b / (2 * Ix * u0);
+            pertOutput.Cy *= q * area / mass;
+            pertOutput.Cn *= q * area * b / Iz;
+            pertOutput.C_roll *= q * area * b / Ix;
 
             derivatives[21] = pertOutput.Cy;     //Yr
             derivatives[23] = pertOutput.Cn;     //Nr
