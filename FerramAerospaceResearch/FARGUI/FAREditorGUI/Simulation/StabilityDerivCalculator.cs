@@ -130,6 +130,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
 
             pertOutput.Cl += 2 * nominalOutput.Cl;
             pertOutput.Cd += 2 * nominalOutput.Cd;
+            pertOutput.Cm += 2 * nominalOutput.Cm;
 
             pertOutput.Cl *= -q * area / (mass * u0);
             pertOutput.Cd *= -q * area / (mass * u0);
