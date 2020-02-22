@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.1 "Liepmann"
+Ferram Aerospace Research v0.15.9.5 "Lighthill"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -20,25 +20,25 @@ Copyright 2017, Michael Ferrara, aka Ferram4
    You should have received a copy of the GNU General Public License
    along with Ferram Aerospace Research.  If not, see <http://www.gnu.org/licenses/>.
 
-   Serious thanks:		a.g., for tons of bugfixes and code-refactorings   
+   Serious thanks:		a.g., for tons of bugfixes and code-refactorings
 				stupid_chris, for the RealChuteLite implementation
-            			Taverius, for correcting a ton of incorrect values  
+            			Taverius, for correcting a ton of incorrect values
 				Tetryds, for finding lots of bugs and issues and not letting me get away with them, and work on example crafts
-            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates  
-            			ialdabaoth (who is awesome), who originally created Module Manager  
-                        	Regex, for adding RPM support  
-				DaMichel, for some ferramGraph updates and some control surface-related features  
-            			Duxwing, for copy editing the readme  
-   
+            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates
+            			ialdabaoth (who is awesome), who originally created Module Manager
+                        	Regex, for adding RPM support
+				DaMichel, for some ferramGraph updates and some control surface-related features
+            			Duxwing, for copy editing the readme
+
    CompatibilityChecker by Majiir, BSD 2-clause http://opensource.org/licenses/BSD-2-Clause
 
-   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission  
+   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/55219
 
    ModularFLightIntegrator by Sarbian, Starwaster and Ferram4, MIT: http://opensource.org/licenses/MIT
 	http://forum.kerbalspaceprogram.com/threads/118088
 
-   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission  
+   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/60863
  */
 
@@ -54,14 +54,14 @@ namespace FerramAerospaceResearch.FARAeroComponents
     {
         void Start()
         {
-            Debug.Log("FAR Modular Flight Integrator function registration started");
+            Debug.Log("[FAR] FAR Modular Flight Integrator function registration started");
             ModularFI.ModularFlightIntegrator.RegisterUpdateAerodynamicsOverride(UpdateAerodynamics);
             ModularFI.ModularFlightIntegrator.RegisterUpdateThermodynamicsPre(UpdateThermodynamicsPre);
             ModularFI.ModularFlightIntegrator.RegisterCalculateAreaExposedOverride(CalculateAreaRadiative);
             ModularFI.ModularFlightIntegrator.RegisterCalculateAreaRadiativeOverride(CalculateAreaRadiative);
             ModularFI.ModularFlightIntegrator.RegisterGetSunAreaOverride(CalculateSunArea);
             ModularFI.ModularFlightIntegrator.RegisterGetBodyAreaOverride(CalculateBodyArea);
-            Debug.Log("FAR Modular Flight Integrator function registration complete");
+            Debug.Log("[FAR] FAR Modular Flight Integrator function registration complete");
             GameObject.Destroy(this);
         }
 
@@ -87,7 +87,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
                 //fi.SetSkinProperties(ptd);
             }
             //fi.timeSinceLastUpdate = 0;
-            //Debug.Log("MFI: " + fi.CoM + " " + Planetarium.GetUniversalTime());
+            //Debug.Log("[FAR] MFI: " + fi.CoM + " " + Planetarium.GetUniversalTime());
         }
 
         void UpdateAerodynamics(ModularFI.ModularFlightIntegrator fi, Part part)
@@ -118,7 +118,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
                         part.dragVectorDirLocal = -part.partTransform.InverseTransformDirection(part.dragVectorDir);
                         CalculateLocalDynPresAndAngularDrag(fi, part);
                     }
-                    if (!part.DragCubes.None) 
+                    if (!part.DragCubes.None)
                         part.DragCubes.SetDrag(part.dragVectorDirLocal, (float)fi.mach);
                 }
             }
@@ -159,7 +159,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
 
             return CalculateAreaRadiative(fi, part, module);
         }
-        
+
         double CalculateAreaRadiative(ModularFI.ModularFlightIntegrator fi, Part part, FARAeroPartModule aeroModule)
         {
             //double dragCubeExposed = fi.BaseFICalculateAreaExposed(part);
@@ -196,7 +196,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
                 if (exposedArea > 0)
                     return exposedArea;
                 else
-                    return fi.BaseFICalculateAreaExposed(part); 
+                    return fi.BaseFICalculateAreaExposed(part);
             }
             else
                 return fi.BaseFICalculateAreaExposed(part);

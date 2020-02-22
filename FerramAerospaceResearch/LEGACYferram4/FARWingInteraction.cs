@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.1 "Liepmann"
+Ferram Aerospace Research v0.15.9.5 "Lighthill"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -20,25 +20,25 @@ Copyright 2017, Michael Ferrara, aka Ferram4
    You should have received a copy of the GNU General Public License
    along with Ferram Aerospace Research.  If not, see <http://www.gnu.org/licenses/>.
 
-   Serious thanks:		a.g., for tons of bugfixes and code-refactorings   
+   Serious thanks:		a.g., for tons of bugfixes and code-refactorings
 				stupid_chris, for the RealChuteLite implementation
-            			Taverius, for correcting a ton of incorrect values  
+            			Taverius, for correcting a ton of incorrect values
 				Tetryds, for finding lots of bugs and issues and not letting me get away with them, and work on example crafts
-            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates  
-            			ialdabaoth (who is awesome), who originally created Module Manager  
-                        	Regex, for adding RPM support  
-				DaMichel, for some ferramGraph updates and some control surface-related features  
-            			Duxwing, for copy editing the readme  
-   
+            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates
+            			ialdabaoth (who is awesome), who originally created Module Manager
+                        	Regex, for adding RPM support
+				DaMichel, for some ferramGraph updates and some control surface-related features
+            			Duxwing, for copy editing the readme
+
    CompatibilityChecker by Majiir, BSD 2-clause http://opensource.org/licenses/BSD-2-Clause
 
-   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission  
+   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/55219
 
    ModularFLightIntegrator by Sarbian, Starwaster and Ferram4, MIT: http://opensource.org/licenses/MIT
 	http://forum.kerbalspaceprogram.com/threads/118088
 
-   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission  
+   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/60863
  */
 
@@ -119,7 +119,7 @@ namespace ferram4
             get { return clInterferenceFactor; }
             private set { clInterferenceFactor = value; }
         }
-        
+
         public FARWingInteraction(FARWingAerodynamicModel parentModule, Part parentPart, Vector3 rootChordMid, short srfAttachNegative)
         {
             parentWingModule = parentModule;
@@ -207,7 +207,7 @@ namespace ferram4
 
             rootChordMidPt = parentWingPart.partTransform.position + parentWingPart.partTransform.TransformDirection(rootChordMidLocal);
 
-            if(isSmallSrf)
+            if (isSmallSrf)
             {
                 forwardExposure = ExposureSmallSrf(out nearbyWingModulesForward, parentWingPart.partTransform.up, VesselPartList, flt_MAC, flt_MAC);
 
@@ -296,13 +296,13 @@ namespace ferram4
             associatedInfluences.Clear();
             double influencePerIndex = 1 / (double)arrayIn.Length;
 
-            for(int i = 0; i < arrayIn.Length; i++)
+            for (int i = 0; i < arrayIn.Length; i++)
             {
                 FARWingAerodynamicModel w = arrayIn[i];
                 bool foundModule = false;
-                for(int j = 0; j < moduleList.Count; j++)
+                for (int j = 0; j < moduleList.Count; j++)
                 {
-                    if(moduleList[j] == w)
+                    if (moduleList[j] == w)
                     {
                         associatedInfluences[j] += influencePerIndex * Math.Abs(Vector3.Dot(parentWingPart.partTransform.forward, w.part.partTransform.forward));
                         foundModule = true;
@@ -479,7 +479,6 @@ namespace ferram4
                         }
                         else
                             colliders = new Collider[1] { p.collider };
-                        
 
                         for (int l = 0; l < colliders.Length; l++)
                             if (h.collider == colliders[l] && h.distance > 0)
@@ -659,7 +658,7 @@ namespace ferram4
                 FARWingAerodynamicModel wingModule = wingModules[i];
                 double wingInfluenceFactor = associatedInfluences[i] * directionalInfluence;
 
-                if(wingModule == null)
+                if (wingModule == null)
                 {
                     HandleNullPart(wingModules, associatedInfluences, i);
                     i--;

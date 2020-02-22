@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.1 "Liepmann"
+Ferram Aerospace Research v0.15.9.5 "Lighthill"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -20,25 +20,25 @@ Copyright 2017, Michael Ferrara, aka Ferram4
    You should have received a copy of the GNU General Public License
    along with Ferram Aerospace Research.  If not, see <http://www.gnu.org/licenses/>.
 
-   Serious thanks:		a.g., for tons of bugfixes and code-refactorings   
+   Serious thanks:		a.g., for tons of bugfixes and code-refactorings
 				stupid_chris, for the RealChuteLite implementation
-            			Taverius, for correcting a ton of incorrect values  
+            			Taverius, for correcting a ton of incorrect values
 				Tetryds, for finding lots of bugs and issues and not letting me get away with them, and work on example crafts
-            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates  
-            			ialdabaoth (who is awesome), who originally created Module Manager  
-                        	Regex, for adding RPM support  
-				DaMichel, for some ferramGraph updates and some control surface-related features  
-            			Duxwing, for copy editing the readme  
-   
+            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates
+            			ialdabaoth (who is awesome), who originally created Module Manager
+                        	Regex, for adding RPM support
+				DaMichel, for some ferramGraph updates and some control surface-related features
+            			Duxwing, for copy editing the readme
+
    CompatibilityChecker by Majiir, BSD 2-clause http://opensource.org/licenses/BSD-2-Clause
 
-   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission  
+   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/55219
 
    ModularFLightIntegrator by Sarbian, Starwaster and Ferram4, MIT: http://opensource.org/licenses/MIT
 	http://forum.kerbalspaceprogram.com/threads/118088
 
-   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission  
+   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/60863
  */
 
@@ -52,7 +52,7 @@ using FerramAerospaceResearch;
 namespace ferram4
 {
     public class FARControllableSurface : FARWingAerodynamicModel, ILiftProvider, ITorqueProvider
-    {        
+    {
         protected Transform movableSection = null;
 
         protected Transform MovableSection
@@ -137,8 +137,8 @@ namespace ferram4
         public int flapDeflectionLevel = 2;
 
         [KSPField(guiName = "FARCtrlSurfFlapDeflect", guiActiveEditor = false, isPersistant = true), UI_FloatRange(affectSymCounterparts = UI_Scene.All, maxValue = 85, minValue = -85, scene = UI_Scene.All, stepIncrement = 0.5f)]
-        public float maxdeflectFlap = 15; 
-        
+        public float maxdeflectFlap = 15;
+
         protected double PitchLocation = 0;
         protected double YawLocation = 0;
         protected double RollLocation = 0;
@@ -355,7 +355,7 @@ namespace ferram4
                 justStarted = true;
                 lastReferenceTransform = vessel.ReferenceTransform;
             }
-        
+
         }
 
         void CheckShielded()
@@ -421,7 +421,7 @@ namespace ferram4
                 RollLocation = Vector3.Dot(part.partTransform.forward, EditorLogic.RootPart.partTransform.forward) * Math.Sign(Vector3.Dot(CoMoffset, -EditorLogic.RootPart.partTransform.right));
                 roll2 = Vector3.Dot(part.partTransform.forward, EditorLogic.RootPart.partTransform.right) * Math.Sign(Vector3.Dot(CoMoffset, EditorLogic.RootPart.partTransform.forward));
                 BrakeRudderLocation = Vector3.Dot(part.partTransform.forward, EditorLogic.RootPart.partTransform.forward);
-                BrakeRudderSide = Math.Sign(Vector3.Dot(CoMoffset, EditorLogic.RootPart.partTransform.right)); 
+                BrakeRudderSide = Math.Sign(Vector3.Dot(CoMoffset, EditorLogic.RootPart.partTransform.right));
                 AoAsign = Math.Sign(Vector3.Dot(part.partTransform.up, EditorLogic.RootPart.partTransform.up));
             }
             else
@@ -433,17 +433,17 @@ namespace ferram4
                 RollLocation = Vector3.Dot(part.partTransform.forward, vessel.ReferenceTransform.forward) * Math.Sign(Vector3.Dot(CoMoffset, -vessel.ReferenceTransform.right));
                 roll2 = Vector3.Dot(part.partTransform.forward, vessel.ReferenceTransform.right) * Math.Sign(Vector3.Dot(CoMoffset, vessel.ReferenceTransform.forward));
                 BrakeRudderLocation = Vector3.Dot(part.partTransform.forward, vessel.ReferenceTransform.forward);
-                BrakeRudderSide = Mathf.Sign(Vector3.Dot(CoMoffset, vessel.ReferenceTransform.right)); 
+                BrakeRudderSide = Mathf.Sign(Vector3.Dot(CoMoffset, vessel.ReferenceTransform.right));
                 AoAsign = Math.Sign(Vector3.Dot(part.partTransform.up, vessel.ReferenceTransform.up));
             }
             //PitchLocation *= PitchLocation * Mathf.Sign(PitchLocation);
             //YawLocation *= YawLocation * Mathf.Sign(YawLocation);
             //RollLocation = RollLocation * RollLocation * Mathf.Sign(RollLocation) + roll2 * roll2 * Mathf.Sign(roll2);
             RollLocation += roll2;
-            
+
             //DaMichel: this is important to force a reset of the flap/spoiler model orientation to the desired value.
-            // What apparently happens on loading a new flight scene is that first the model (obj_ctrlSrf) 
-            // orientation is set correctly by DeflectionAnimation(). But then the orientations is mysteriously 
+            // What apparently happens on loading a new flight scene is that first the model (obj_ctrlSrf)
+            // orientation is set correctly by DeflectionAnimation(). But then the orientations is mysteriously
             // zeroed-out. And this definitely doesn't happen in this module. However OnVesselPartsChange
             // subscribers are called afterwards, so we have a chance to fix the broken orientation state.
             lastAoAoffset = double.MaxValue;
@@ -458,7 +458,7 @@ namespace ferram4
             AoAdesiredFlap = FARMathUtil.Clamp(AoAdesiredFlap, -Math.Abs(maxdeflectFlap), Math.Abs(maxdeflectFlap));
         }
 
-        
+
         private void AoAOffsetFromFlapDeflection()
         {
             AoAdesiredFlap = maxdeflectFlap * flapLocation * flapDeflectionLevel * 0.33333333333;
@@ -488,7 +488,7 @@ namespace ferram4
                 }
                 AoAdesiredControl *= maxdeflect;
                 if (pitchaxisDueToAoA != 0.0)
-				{ 
+				{
                     Vector3d vel = this.GetVelocity();
                     double velMag = vel.magnitude;
                     if (velMag > 5)
@@ -541,9 +541,9 @@ namespace ferram4
             return current;
         }
 
-        //DaMichel: Similarly, this is used for constant rate movment towards the desired value. I presume it is more realistic for 
+        //DaMichel: Similarly, this is used for constant rate movment towards the desired value. I presume it is more realistic for
         //for slow moving flaps and spoilers. It looks better anyways.
-        //ferram4: The time constant specifies the time it would take for a first-order system to reach its steady-state value, 
+        //ferram4: The time constant specifies the time it would take for a first-order system to reach its steady-state value,
         //assuming that it was proportional to only the initial error, not the error as a function of time
         private static double BlendDeflectionLinear(double current, double desired, double maximumDeflection, double timeConstant, bool forceSetToDesired)
         {
@@ -602,7 +602,7 @@ namespace ferram4
                     localRot = Quaternion.FromToRotation(deflectedNormal, new Vector3(0, 0, 1));
                 else
                     localRot = Quaternion.FromToRotation(new Vector3(0, 0, 1), deflectedNormal);
-                
+
                 MovableSection.localRotation *= localRot;
 
             }
@@ -732,7 +732,7 @@ namespace ferram4
             FixWrongUIRange("pitchaxis", 100, -100);
             FixWrongUIRange("yawaxis", 100, -100);
             FixWrongUIRange("rollaxis", 100, -100);
-            FixWrongUIRange("brakeRudder", 100, -100); 
+            FixWrongUIRange("brakeRudder", 100, -100);
             FixWrongUIRange("maxdeflect", 40, -40);
             FixWrongUIRange("maxdeflectFlap", 85, -85);
         }

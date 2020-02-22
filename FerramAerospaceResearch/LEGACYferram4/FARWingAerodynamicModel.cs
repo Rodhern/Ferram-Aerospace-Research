@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.1 "Liepmann"
+Ferram Aerospace Research v0.15.9.5 "Lighthill"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -20,25 +20,25 @@ Copyright 2017, Michael Ferrara, aka Ferram4
    You should have received a copy of the GNU General Public License
    along with Ferram Aerospace Research.  If not, see <http://www.gnu.org/licenses/>.
 
-   Serious thanks:		a.g., for tons of bugfixes and code-refactorings   
+   Serious thanks:		a.g., for tons of bugfixes and code-refactorings
 				stupid_chris, for the RealChuteLite implementation
-            			Taverius, for correcting a ton of incorrect values  
+            			Taverius, for correcting a ton of incorrect values
 				Tetryds, for finding lots of bugs and issues and not letting me get away with them, and work on example crafts
-            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates  
-            			ialdabaoth (who is awesome), who originally created Module Manager  
-                        	Regex, for adding RPM support  
-				DaMichel, for some ferramGraph updates and some control surface-related features  
-            			Duxwing, for copy editing the readme  
-   
+            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates
+            			ialdabaoth (who is awesome), who originally created Module Manager
+                        	Regex, for adding RPM support
+				DaMichel, for some ferramGraph updates and some control surface-related features
+            			Duxwing, for copy editing the readme
+
    CompatibilityChecker by Majiir, BSD 2-clause http://opensource.org/licenses/BSD-2-Clause
 
-   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission  
+   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/55219
 
    ModularFLightIntegrator by Sarbian, Starwaster and Ferram4, MIT: http://opensource.org/licenses/MIT
 	http://forum.kerbalspaceprogram.com/threads/118088
 
-   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission  
+   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/60863
  */
 
@@ -51,7 +51,7 @@ using KSP.Localization;
 
 /// <summary>
 /// This calculates the lift and drag on a wing in the atmosphere
-/// 
+///
 /// It uses Prandtl lifting line theory to calculate the basic lift and drag coefficients and includes compressibility corrections for subsonic and supersonic flows; transsonic regime has placeholder
 /// </summary>
 
@@ -375,14 +375,14 @@ namespace ferram4
             NUFAR_areaExposedFactor = Math.Min(a.ProjectedAreas.kN, a.ProjectedAreas.kP);
             NUFAR_totalExposedAreaFactor = Math.Max(a.ProjectedAreas.kN, a.ProjectedAreas.kP);
 
-            //Debug.Log("kN " + a.ProjectedAreas.kN + " kP " + a.ProjectedAreas.kP + " area " + S);
+            //Debug.Log("[FAR] kN " + a.ProjectedAreas.kN + " kP " + a.ProjectedAreas.kP + " area " + S);
 
         }
 
         public void NUFAR_SetExposedAreaFactor()
         {
             List<Part> counterparts = part.symmetryCounterparts;
-            double counterpartsCount = 1; 
+            double counterpartsCount = 1;
             double sum = NUFAR_areaExposedFactor;
             double totalExposedSum = NUFAR_totalExposedAreaFactor;
 
@@ -444,7 +444,7 @@ namespace ferram4
 
         public double GetCl()
         {
-        
+
             double ClUpwards = 1;
             if (HighLogic.LoadedSceneIsFlight)
                 ClUpwards = Vector3.Dot(liftDirection, -vessel.vesselTransform.forward);
@@ -522,7 +522,7 @@ namespace ferram4
             }
             catch       //FIX ME!!!
             {           //Yell at KSP devs so that I don't have to engage in bad code practice
-                //Debug.Log("The expected exception from the symmetry counterpart part transform internals was caught and suppressed");
+                //Debug.Log("[FAR] The expected exception from the symmetry counterpart part transform internals was caught and suppressed");
                 return Vector3.zero;
             }
         }
@@ -935,7 +935,7 @@ namespace ferram4
             Vector3d force = (L + D);
             if (double.IsNaN(force.sqrMagnitude) || double.IsNaN(AerodynamicCenter.sqrMagnitude))// || float.IsNaN(moment.magnitude))
             {
-                Debug.LogWarning("FAR Error: Aerodynamic force = " + force.magnitude + " AC Loc = " + AerodynamicCenter.magnitude + " AoA = " + AoA + "\n\rMAC = " + effective_MAC + " B_2 = " + effective_b_2 + " sweepAngle = " + cosSweepAngle + "\n\rMidChordSweep = " + MidChordSweep + " MidChordSweepSideways = " + MidChordSweepSideways + "\n\r at " + part.name);
+                Debug.LogWarning("[FAR] Error: Aerodynamic force = " + force.magnitude + " AC Loc = " + AerodynamicCenter.magnitude + " AoA = " + AoA + "\n\rMAC = " + effective_MAC + " B_2 = " + effective_b_2 + " sweepAngle = " + cosSweepAngle + "\n\rMidChordSweep = " + MidChordSweep + " MidChordSweepSideways = " + MidChordSweepSideways + "\n\r at " + part.name);
                 force = AerodynamicCenter = Vector3d.zero;
             }
 
@@ -1154,7 +1154,7 @@ namespace ferram4
             }
             /*
              * Supersonic nonlinear lift / drag code
-             * 
+             *
              */
             else if (MachNumber > 1.4)
             {
@@ -1321,7 +1321,7 @@ namespace ferram4
             //Region 4 is the lower surface behind the max thickness
             double p4 = PMExpansionCalculation(2 * halfAngle, M3) * p3;
 
-            //Debug.Log(p1 + " " + p2 + " " + p3 + " " + p4);
+            //Debug.Log("[FAR] " + p1 + " " + p2 + " " + p3 + " " + p4);
             pRatio = ((p3 + p4) - (p1 + p2)) * 0.5;
 
             return pRatio;
@@ -1553,7 +1553,7 @@ namespace ferram4
 
             double dd_MachNumber = 0.8 * tmp;               //Find Drag Divergence Mach Number
 
-            if (M < dd_MachNumber)      //If below this number, 
+            if (M < dd_MachNumber)      //If below this number,
             {
                 zeroLiftCdIncrement = 0;
                 return 0;
@@ -1584,7 +1584,7 @@ namespace ferram4
 
                 zeroLiftCdIncrement = CdIncrement;
             }
-           
+
             double scalingMachNumber = Math.Min(peak_MachNumber, 1.2);
 
             if (M < scalingMachNumber)
@@ -1639,7 +1639,7 @@ namespace ferram4
                 PartModule m = part.Modules["TweakScale"];
                 float massScale = (float)m.Fields.GetValue("MassScale");
                 baseMass = part.partInfo.partPrefab.mass + (part.partInfo.partPrefab.mass * (massScale - 1));
-                Debug.Log("TweakScale massScale for FAR usage: " + massScale);
+                Debug.Log("[FAR] TweakScale massScale for FAR usage: " + massScale);
             }
             massScaleReady = false;
 

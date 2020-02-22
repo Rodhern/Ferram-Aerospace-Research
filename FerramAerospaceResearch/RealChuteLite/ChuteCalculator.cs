@@ -13,7 +13,7 @@ namespace FerramAerospaceResearch.RealChuteLite
         #region Initialization
         private void Start()
         {
-            Debug.Log("Initiating RealChuteLite Chute Property Calculation");
+            Debug.Log("[FAR] Initiating RealChuteLite Chute Property Calculation");
             foreach (AvailablePart part in PartLoader.Instance.loadedParts)
             {
                 Part prefab = part.partPrefab;
@@ -23,7 +23,7 @@ namespace FerramAerospaceResearch.RealChuteLite
                     RealChuteFAR module = prefab.Modules.GetModule<RealChuteFAR>();
                     DragCubeSystem.Instance.LoadDragCubes(prefab);
                     DragCube semi = prefab.DragCubes.Cubes.Find(c => c.Name == "SEMIDEPLOYED"), deployed = prefab.DragCubes.Cubes.Find(c => c.Name == "DEPLOYED");
-                    if (semi == null || deployed == null) { Debug.Log(part.title + " cannot find drag cube for RealChuteLite"); }
+                    if (semi == null || deployed == null) { Debug.Log("[FAR] " + part.title + " cannot find drag cube for RealChuteLite"); }
                     module.preDeployedDiameter = GetApparentDiameter(semi);
                     module.deployedDiameter = GetApparentDiameter(deployed);
                     part.moduleInfos.Find(m => m.moduleName == "RealChute").info = module.GetInfo();

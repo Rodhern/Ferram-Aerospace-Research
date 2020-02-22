@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.1 "Liepmann"
+Ferram Aerospace Research v0.15.9.5 "Lighthill"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -20,25 +20,25 @@ Copyright 2017, Michael Ferrara, aka Ferram4
    You should have received a copy of the GNU General Public License
    along with Ferram Aerospace Research.  If not, see <http://www.gnu.org/licenses/>.
 
-   Serious thanks:		a.g., for tons of bugfixes and code-refactorings   
+   Serious thanks:		a.g., for tons of bugfixes and code-refactorings
 				stupid_chris, for the RealChuteLite implementation
-            			Taverius, for correcting a ton of incorrect values  
+            			Taverius, for correcting a ton of incorrect values
 				Tetryds, for finding lots of bugs and issues and not letting me get away with them, and work on example crafts
-            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates  
-            			ialdabaoth (who is awesome), who originally created Module Manager  
-                        	Regex, for adding RPM support  
-				DaMichel, for some ferramGraph updates and some control surface-related features  
-            			Duxwing, for copy editing the readme  
-   
+            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates
+            			ialdabaoth (who is awesome), who originally created Module Manager
+                        	Regex, for adding RPM support
+				DaMichel, for some ferramGraph updates and some control surface-related features
+            			Duxwing, for copy editing the readme
+
    CompatibilityChecker by Majiir, BSD 2-clause http://opensource.org/licenses/BSD-2-Clause
 
-   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission  
+   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/55219
 
    ModularFLightIntegrator by Sarbian, Starwaster and Ferram4, MIT: http://opensource.org/licenses/MIT
 	http://forum.kerbalspaceprogram.com/threads/118088
 
-   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission  
+   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/60863
  */
 
@@ -138,7 +138,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
 
         public VehicleAerodynamics()
         {
-            if(currentlyUnusedSections == null)
+            if (currentlyUnusedSections == null)
                 currentlyUnusedSections = new Stack<FARAeroSection>();
         }
 
@@ -258,7 +258,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
             {
                 ferram4.FARWingAerodynamicModel w = _legacyWingModels[i];
                 w.NUFAR_CalculateExposedAreaFactor();
-            } 
+            }
 
             for (int i = 0; i < _legacyWingModels.Count; i++)
             {
@@ -269,7 +269,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
             {
                 ferram4.FARWingAerodynamicModel w = _legacyWingModels[i];
                 w.NUFAR_UpdateShieldingStateFromAreaFactor();
-            } 
+            }
             return _legacyWingModels;
         }
         #endregion
@@ -589,10 +589,11 @@ namespace FerramAerospaceResearch.FARAeroComponents
             double* prevUncorrectedVals = stackalloc double[numVals];
             double* futureUncorrectedVals = stackalloc double[numVals - 1];
 
-
-/*            double[] gaussianFactors = new double[numVals];
+            /*
+            double[] gaussianFactors = new double[numVals];
             double[] prevUncorrectedVals = new double[numVals];
-            double[] futureUncorrectedVals = new double[numVals - 1];*/
+            double[] futureUncorrectedVals = new double[numVals - 1];
+            */
 
             double invVariance = 1 / (stdDev * stdDev);
 
@@ -763,7 +764,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
             {
 
                 double secondDeriv = 0;
-                if(i >= frontIndex && i <= backIndex)
+                if (i >= frontIndex && i <= backIndex)
                     secondDeriv = sK[0] * vehicleCrossSection[i].area;
 
                 for (int k = 1; k <= M; k++)
@@ -792,7 +793,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
                 double secondDeriv = 0;
 
                 secondDeriv += vehicleCrossSection[i].area;
-                if(i + 2 <= backIndex)
+                if (i + 2 <= backIndex)
                     secondDeriv += vehicleCrossSection[i + 2].area;
                 if (i + 1 <= backIndex)
                     secondDeriv -= 2 * vehicleCrossSection[i + 1].area;
@@ -852,7 +853,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
                     engineExitArea += Math.Abs(adjuster.AreaRemovedFromCrossSection());
                 if (adjuster is IntakeCrossSectionAdjuster)
                     intakeArea += Math.Abs(adjuster.AreaRemovedFromCrossSection());
-                if(adjuster is IntegratedIntakeEngineCrossSectionAdjuster)
+                if (adjuster is IntegratedIntakeEngineCrossSectionAdjuster)
                 {
                     engineExitArea += Math.Abs(adjuster.AreaRemovedFromCrossSection());
                     intakeArea += Math.Abs(adjuster.AreaRemovedFromCrossSection());
@@ -941,7 +942,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
                             _ductedAreaAdjustment[i] = 0;
                         }
                     }
-                        
+
                 }
 
                 tmpArea = _ductedAreaAdjustment[_ductedAreaAdjustment.Length - 1];
@@ -964,8 +965,8 @@ namespace FerramAerospaceResearch.FARAeroComponents
                             _ductedAreaAdjustment[i] = 0;
                         }
                     }
-                } 
-                
+                }
+
                 for (int i = _ductedAreaAdjustment.Length - 1; i >= 0; i--)
                 {
                     double areaAdjustment = 0;
@@ -1020,7 +1021,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
 
                 double currentArea = endVoxelArea;
 
-                while(currentArea > 0)
+                while (currentArea > 0)
                 {
                     currentArea -= endVoxelArea;
                     _ductedAreaAdjustment[index] = currentArea;
@@ -1050,7 +1051,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
                     vehicleCrossSection[i].area = tmpTotalArea;
 
                 }
-                
+
             }
             activeAdjusters.Clear();
         }
@@ -1071,7 +1072,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
             double filledVolume = 0;
             for (int i = front; i <= back; i++)
             {
-                if(double.IsNaN(_vehicleCrossSection[i].area))
+                if (double.IsNaN(_vehicleCrossSection[i].area))
                     ThreadSafeDebugLogger.Instance.RegisterMessage("FAR VOXEL ERROR: Voxel CrossSection Area is NaN at section " + i);
 
                 filledVolume += _vehicleCrossSection[i].area;
@@ -1091,7 +1092,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
 
             double invMaxRadFactor = 1f / Math.Sqrt(_maxCrossSectionArea / Math.PI);
 
-            double finenessRatio = _sectionThickness * numSections * 0.5 * invMaxRadFactor;       //vehicle length / max diameter, as calculated from sect thickness * num sections / (2 * max radius) 
+            double finenessRatio = _sectionThickness * numSections * 0.5 * invMaxRadFactor;       //vehicle length / max diameter, as calculated from sect thickness * num sections / (2 * max radius)
 
             int extraLowFinessRatioDerivSmoothingPasses = (int)Math.Round((5f - finenessRatio) * 0.5f) * FARSettingsScenarioModule.Settings.numDerivSmoothingPasses;
             if (extraLowFinessRatioDerivSmoothingPasses < 0)
@@ -1116,7 +1117,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
             //recalc these with adjusted cross-sections
             invMaxRadFactor = 1f / Math.Sqrt(_maxCrossSectionArea / Math.PI);
 
-            finenessRatio = _sectionThickness * numSections * 0.5 * invMaxRadFactor;       //vehicle length / max diameter, as calculated from sect thickness * num sections / (2 * max radius) 
+            finenessRatio = _sectionThickness * numSections * 0.5 * invMaxRadFactor;       //vehicle length / max diameter, as calculated from sect thickness * num sections / (2 * max radius)
 
             //skin friction and pressure drag for a body, taken from 1978 USAF Stability And Control DATCOM, Section 4.2.3.1, Paragraph A
             double viscousDragFactor = 0;
@@ -1130,7 +1131,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
             _criticalMach = criticalMachNumber * cmfucs;
 
             float lowFinenessRatioFactor = 1f;
-            lowFinenessRatioFactor += 1f/(1 + 0.5f * (float)finenessRatio);
+            lowFinenessRatioFactor += 1f / (1 + 0.5f * (float)finenessRatio);
             float lowFinenessRatioBlendFactor = lowFinenessRatioFactor--;
 
             _moduleAndAreasDict.Clear();
@@ -1180,9 +1181,9 @@ namespace FerramAerospaceResearch.FARAeroComponents
 
                 //Potential and Viscous lift calcs
                 float potentialFlowNormalForce;
-                if(i == 0)
+                if (i == 0)
                     potentialFlowNormalForce = (float)(nextArea - curArea);
-                else if(i == numSections)
+                else if (i == numSections)
                     potentialFlowNormalForce = (float)(curArea - prevArea);
                 else
                     potentialFlowNormalForce = (float)(nextArea - prevArea) * 0.5f;      //calcualted from area change
@@ -1198,7 +1199,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
                 else if (potentialFlowNormalForce < -areaChangeMax)
                     potentialFlowNormalForce = -areaChangeMax;
                 else
-                    if(areaChangeMax != 0)
+                    if (areaChangeMax != 0)
                         sonicBaseDrag *= Math.Abs(potentialFlowNormalForce / areaChangeMax);      //some scaling for small changes in cross-section
 
                 double flatnessRatio = _vehicleCrossSection[index].flatnessRatio;
@@ -1215,9 +1216,9 @@ namespace FerramAerospaceResearch.FARAeroComponents
 
                 float hypersonicDragForwardFrac = 0, hypersonicDragBackwardFrac = 0;
 
-                if(curArea - prevArea != 0)
+                if (curArea - prevArea != 0)
                     hypersonicDragForwardFrac = Math.Abs(hypersonicDragForward * 0.5f / (float)(curArea - prevArea));
-                if(curArea - nextArea != 0)
+                if (curArea - nextArea != 0)
                     hypersonicDragBackwardFrac = Math.Abs(hypersonicDragBackward * 0.5f / (float)(curArea - nextArea));
 
                 hypersonicDragForwardFrac *= hypersonicDragForwardFrac;     //^2
@@ -1372,7 +1373,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
 
 
                 Vector3 nRefVector = Matrix4x4.TRS(Vector3.zero, Quaternion.FromToRotation(_vehicleMainAxis, xRefVector), Vector3.one).MultiplyVector(_vehicleCrossSection[index].flatNormalVector);
-                
+
                 Vector3 centroid = _localToWorldMatrix.MultiplyPoint3x4(_vehicleCrossSection[index].centroid);
                 xRefVector = _localToWorldMatrix.MultiplyVector(xRefVector);
                 nRefVector = _localToWorldMatrix.MultiplyVector(nRefVector);
@@ -1419,8 +1420,8 @@ namespace FerramAerospaceResearch.FARAeroComponents
                 xForceSkinFriction.SetPoint(1, new Vector3d(1, (surfaceArea * viscousDragFactor), 0));   //transonic visc drag
                 xForceSkinFriction.SetPoint(2, new Vector3d(2, (float)surfaceArea, 0));                     //above Mach 1.4, visc is purely surface drag, no pressure-related components simulated
 
-                currentSection.UpdateAeroSection(potentialFlowNormalForce, viscCrossflowDrag
-                    ,viscCrossflowDrag / (float)(_sectionThickness), (float)flatnessRatio, hypersonicMomentForward, hypersonicMomentBackward,
+                currentSection.UpdateAeroSection(potentialFlowNormalForce, viscCrossflowDrag,
+                    viscCrossflowDrag / (float)(_sectionThickness), (float)flatnessRatio, hypersonicMomentForward, hypersonicMomentBackward,
                     centroid, xRefVector, nRefVector, _localToWorldMatrix, _vehicleMainAxis, includedModules, weighting, _partWorldToLocalMatrixDict);
 
 
@@ -1484,7 +1485,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
                 _newAeroModules.Capacity = tmpAeroModules.Count;
 
 
-            foreach(FARAeroPartModule module in tmpAeroModules)
+            foreach (FARAeroPartModule module in tmpAeroModules)
             {
                 if (aeroIndex < _newAeroModules.Count)
                     _newAeroModules[aeroIndex] = module;
@@ -1534,7 +1535,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
 
         private double CalculateHypersonicMoment(double lowArea, double highArea, double sectionThickness)
         {
-            if(lowArea >= highArea)
+            if (lowArea >= highArea)
                 return 0;
 
             double r1, r2;
@@ -1578,19 +1579,19 @@ namespace FerramAerospaceResearch.FARAeroComponents
                 if (cP < 0)
                 {
                     double firstDerivArea;
-                    if(i == front)
+                    if (i == front)
                     {
-                        firstDerivArea = vehicleCrossSection[i].area - vehicleCrossSection[i+1].area;
+                        firstDerivArea = vehicleCrossSection[i].area - vehicleCrossSection[i + 1].area;
                         firstDerivArea /= sectionThickness;
                     }
                     else if (i == back)
                     {
-                        firstDerivArea = vehicleCrossSection[i].area - vehicleCrossSection[i+1].area;
+                        firstDerivArea = vehicleCrossSection[i].area - vehicleCrossSection[i + 1].area;
                         firstDerivArea /= sectionThickness;
                     }
                     else
                     {
-                        firstDerivArea = vehicleCrossSection[i-1].area - vehicleCrossSection[i+1].area;
+                        firstDerivArea = vehicleCrossSection[i - 1].area - vehicleCrossSection[i + 1].area;
                         firstDerivArea /= sectionThickness;
                         firstDerivArea *= 0.5;
                     }
@@ -1700,8 +1701,8 @@ namespace FerramAerospaceResearch.FARAeroComponents
                 if (i < vehicleCrossSection.Length)
                     tmp *= MathClampAbs(vehicleCrossSection[i].secondAreaDeriv, cutoff);
                 else
-                    tmp *= 0; 
-                
+                    tmp *= 0;
+
                 cP += tmp;
             }
 
@@ -1859,7 +1860,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
             drag = 2d * Math.PI / drag;
             drag *= radDiff * radDiffSq * (r1 + r2);
 
-            return -drag;        //force is negative 
+            return -drag;        //force is negative
         }
 
         private double CalcAllTransonicWaveDrag(VoxelCrossSection[] sections, int front, int numSections, double sectionThickness)
@@ -1867,7 +1868,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
             double drag = 0;
             double Lj;
 
-            for(int j = 0; j < numSections; j++)
+            for (int j = 0; j < numSections; j++)
             {
                 double accumulator = 0;
 
@@ -1875,7 +1876,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
                 if (j > 0)
                     Lj -= (j - 0.5) * Math.Log(j - 0.5);
 
-                for(int i = j; i < numSections; i++)
+                for (int i = j; i < numSections; i++)
                 {
                     accumulator += sections[front + i].secondAreaDeriv * sections[front + i - j].secondAreaDeriv;
                 }
@@ -1982,7 +1983,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
             double maxAbsRateOfChange = 0;
             double maxSecondDeriv = 0;
             double prevArea = 0;
-            double invSectionThickness = 1/ sectionThickness;
+            double invSectionThickness = 1 / sectionThickness;
 
             for (int i = frontIndex; i <= backIndex; i++)
             {

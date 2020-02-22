@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.1 "Liepmann"
+Ferram Aerospace Research v0.15.9.5 "Lighthill"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -20,25 +20,25 @@ Copyright 2017, Michael Ferrara, aka Ferram4
    You should have received a copy of the GNU General Public License
    along with Ferram Aerospace Research.  If not, see <http://www.gnu.org/licenses/>.
 
-   Serious thanks:		a.g., for tons of bugfixes and code-refactorings   
+   Serious thanks:		a.g., for tons of bugfixes and code-refactorings
 				stupid_chris, for the RealChuteLite implementation
-            			Taverius, for correcting a ton of incorrect values  
+            			Taverius, for correcting a ton of incorrect values
 				Tetryds, for finding lots of bugs and issues and not letting me get away with them, and work on example crafts
-            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates  
-            			ialdabaoth (who is awesome), who originally created Module Manager  
-                        	Regex, for adding RPM support  
-				DaMichel, for some ferramGraph updates and some control surface-related features  
-            			Duxwing, for copy editing the readme  
-   
+            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates
+            			ialdabaoth (who is awesome), who originally created Module Manager
+                        	Regex, for adding RPM support
+				DaMichel, for some ferramGraph updates and some control surface-related features
+            			Duxwing, for copy editing the readme
+
    CompatibilityChecker by Majiir, BSD 2-clause http://opensource.org/licenses/BSD-2-Clause
 
-   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission  
+   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/55219
 
    ModularFLightIntegrator by Sarbian, Starwaster and Ferram4, MIT: http://opensource.org/licenses/MIT
 	http://forum.kerbalspaceprogram.com/threads/118088
 
-   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission  
+   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/60863
  */
 
@@ -85,7 +85,7 @@ namespace FerramAerospaceResearch
         }
 
         public static bool loaded = false;
-        
+
         //Based on ratio of density of water to density of air at SL
         private const double UNDERWATER_DENSITY_FACTOR_MINUS_ONE = 814.51020408163265306122448979592;
         //Standard Reynolds number for transition from laminar to turbulent flow
@@ -179,7 +179,7 @@ namespace FerramAerospaceResearch
                                 break;
                             }
                     }
-                    
+
                     if(index < 0)
                         int.TryParse(bodyProperties.GetValue("index"), out index);
 
@@ -210,7 +210,7 @@ namespace FerramAerospaceResearch
             }
 
             SetDefaultValuesIfNoValuesLoaded();
-          
+
             loaded = true;
 
             string forceUpdatePath = KSPUtil.ApplicationRootPath.Replace("\\", "/") + "GameData/FerramAerospaceResearch/FARForceDataUpdate.cfg";
@@ -534,7 +534,7 @@ namespace FerramAerospaceResearch
                     // different from the one after the parts are attached.
                     RaycastMaskEdit = RaycastMaskVal | (1 << LayerMask.NameToLayer("Ignore Raycast"));
 
-                    Debug.Log("FAR Raycast mask: "+RaycastMaskVal+" "+RaycastMaskEdit);
+                    Debug.Log("[FAR] FAR Raycast mask: "+RaycastMaskVal+" "+RaycastMaskEdit);
                 }
 
                 return EditorAboutToAttach(true) ? RaycastMaskEdit : RaycastMaskVal;
@@ -698,7 +698,7 @@ namespace FerramAerospaceResearch
                 prandtlMeyerAngle = null;
             }
         }
-        
+
         //Based on NASA Contractor Report 187173, Exact and Approximate Oblique Shock Equations for Real-Time Applications
         public static double CalculateSinWeakObliqueShockAngle(double MachNumber, double gamma, double deflectionAngle)
         {
@@ -807,7 +807,7 @@ namespace FerramAerospaceResearch
             deltaTaper -= 0.357;
 
             taperRatio -= deltaTaper;
-            
+
             //theoretic efficiency assuming an unswept wing with no sweep
             double straightWingE = 0.0524 * taperRatio;
             straightWingE += -0.15;

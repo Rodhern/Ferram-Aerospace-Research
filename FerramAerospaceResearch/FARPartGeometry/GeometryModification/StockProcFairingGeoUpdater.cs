@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.1 "Liepmann"
+Ferram Aerospace Research v0.15.9.5 "Lighthill"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -20,25 +20,25 @@ Copyright 2017, Michael Ferrara, aka Ferram4
    You should have received a copy of the GNU General Public License
    along with Ferram Aerospace Research.  If not, see <http://www.gnu.org/licenses/>.
 
-   Serious thanks:		a.g., for tons of bugfixes and code-refactorings   
+   Serious thanks:		a.g., for tons of bugfixes and code-refactorings
 				stupid_chris, for the RealChuteLite implementation
-            			Taverius, for correcting a ton of incorrect values  
+            			Taverius, for correcting a ton of incorrect values
 				Tetryds, for finding lots of bugs and issues and not letting me get away with them, and work on example crafts
-            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates  
-            			ialdabaoth (who is awesome), who originally created Module Manager  
-                        	Regex, for adding RPM support  
-				DaMichel, for some ferramGraph updates and some control surface-related features  
-            			Duxwing, for copy editing the readme  
-   
+            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates
+            			ialdabaoth (who is awesome), who originally created Module Manager
+                        	Regex, for adding RPM support
+				DaMichel, for some ferramGraph updates and some control surface-related features
+            			Duxwing, for copy editing the readme
+
    CompatibilityChecker by Majiir, BSD 2-clause http://opensource.org/licenses/BSD-2-Clause
 
-   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission  
+   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/55219
 
    ModularFLightIntegrator by Sarbian, Starwaster and Ferram4, MIT: http://opensource.org/licenses/MIT
 	http://forum.kerbalspaceprogram.com/threads/118088
 
-   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission  
+   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/60863
  */
 
@@ -67,7 +67,7 @@ namespace FerramAerospaceResearch.FARPartGeometry.GeometryModification
 
             if (validParts == null)
             {
-                Debug.Log("Fairing event setup");
+                Debug.Log("[FAR] Fairing event setup");
                 validParts = new Dictionary<Part, GeometryPartModule>();
                 GameEvents.onFairingsDeployed.Add(FairingDeployGeometryUpdate);
             }
@@ -135,7 +135,7 @@ namespace FerramAerospaceResearch.FARPartGeometry.GeometryModification
         {
             if (ready == false)
             {
-                Debug.Log("Update fairing event");
+                Debug.Log("[FAR] Update fairing event");
                 GameEvents.onFairingsDeployed.Add(FairingDeployGeometryUpdate);
                 /*FieldInfo[] fields = fairing.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
                 bool deployBool = false, breakBool = false;
@@ -149,9 +149,9 @@ namespace FerramAerospaceResearch.FARPartGeometry.GeometryModification
                 breakBool = true;
 
                 if (!deployBool)
-                    Debug.LogError("FAR could not find Stock Procedural Fairing deploy event");
+                    Debug.LogError("[FAR] FAR could not find Stock Procedural Fairing deploy event");
                 if (!breakBool)
-                    Debug.LogError("FAR could not find Stock Procedural Fairing break event");
+                    Debug.LogError("[FAR] FAR could not find Stock Procedural Fairing break event");
             }
 
         }*/

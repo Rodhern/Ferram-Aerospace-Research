@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.1 "Liepmann"
+Ferram Aerospace Research v0.15.9.5 "Lighthill"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -20,25 +20,25 @@ Copyright 2017, Michael Ferrara, aka Ferram4
    You should have received a copy of the GNU General Public License
    along with Ferram Aerospace Research.  If not, see <http://www.gnu.org/licenses/>.
 
-   Serious thanks:		a.g., for tons of bugfixes and code-refactorings   
+   Serious thanks:		a.g., for tons of bugfixes and code-refactorings
 				stupid_chris, for the RealChuteLite implementation
-            			Taverius, for correcting a ton of incorrect values  
+            			Taverius, for correcting a ton of incorrect values
 				Tetryds, for finding lots of bugs and issues and not letting me get away with them, and work on example crafts
-            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates  
-            			ialdabaoth (who is awesome), who originally created Module Manager  
-                        	Regex, for adding RPM support  
-				DaMichel, for some ferramGraph updates and some control surface-related features  
-            			Duxwing, for copy editing the readme  
-   
+            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates
+            			ialdabaoth (who is awesome), who originally created Module Manager
+                        	Regex, for adding RPM support
+				DaMichel, for some ferramGraph updates and some control surface-related features
+            			Duxwing, for copy editing the readme
+
    CompatibilityChecker by Majiir, BSD 2-clause http://opensource.org/licenses/BSD-2-Clause
 
-   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission  
+   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/55219
 
    ModularFLightIntegrator by Sarbian, Starwaster and Ferram4, MIT: http://opensource.org/licenses/MIT
 	http://forum.kerbalspaceprogram.com/threads/118088
 
-   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission  
+   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/60863
  */
 
@@ -52,7 +52,7 @@ using FerramAerospaceResearch.FARGUI;
 
 namespace ferram4
 {
-    //Added by DaMichel: 
+    //Added by DaMichel:
     public class FARAction : KSPAction
     {
         // Is constructed each time a part module instance is created.
@@ -85,7 +85,7 @@ namespace ferram4
         static string[] guiLabels = { Localizer.Format("FARActionSpoilers"),
                                       Localizer.Format("FARActionIncreaseFlap"),
                                       Localizer.Format("FARActionDecreaseFlap") };
-        static string[] currentGuiStrings = { id2actionGroup[0].ToString(), 
+        static string[] currentGuiStrings = { id2actionGroup[0].ToString(),
                                               id2actionGroup[1].ToString(),
                                               id2actionGroup[2].ToString() };
 
@@ -100,7 +100,7 @@ namespace ferram4
         {
             string[] namesTmp = Enum.GetNames(typeof(KSPActionGroup));
             string[] names = new string[namesTmp.Length - 1];
-            
+
             for(int i = 0; i < namesTmp.Length - 1; ++i)
             {
                 names[i] = namesTmp[i];
@@ -120,11 +120,11 @@ namespace ferram4
                 {
                     id2actionGroup[i] = (KSPActionGroup)Enum.Parse(typeof(KSPActionGroup), config.GetValue(configKeys[i], id2actionGroup[i].ToString())); ;
                     currentGuiStrings[i] = id2actionGroup[i].ToString(); // don't forget to initialize the gui
-                    Debug.Log(String.Format("FAR: loaded AG {0} as {1}", configKeys[i], id2actionGroup[i]));
+                    Debug.Log(String.Format("[FAR] Loaded AG {0} as {1}", configKeys[i], id2actionGroup[i]));
                 }
                 catch (Exception e)
                 {
-                    Debug.LogWarning("FAR: error reading config key '" + configKeys[i] + "' with value '" + config.GetValue(configKeys[i], "n/a") + "' gave " + e.ToString());
+                    Debug.LogWarning("[FAR] Error reading config key '" + configKeys[i] + "' with value '" + config.GetValue(configKeys[i], "n/a") + "' gave " + e.ToString());
                 }
                 int initIndex = 0;
                 for(int j = 0; j < agTypes.Length; j++)
@@ -145,7 +145,7 @@ namespace ferram4
             KSP.IO.PluginConfiguration config = FARDebugAndSettings.config;
             for (int i = 0; i < ACTION_COUNT; ++i)
             {
-                Debug.Log(String.Format("FAR: save AG {0} as {1}", configKeys[i], id2actionGroup[i]));
+                Debug.Log(String.Format("[FAR] Save AG {0} as {1}", configKeys[i], id2actionGroup[i]));
                 config.SetValue(configKeys[i], id2actionGroup[i].ToString());
             }
         }
@@ -167,20 +167,20 @@ namespace ferram4
             {
                 actionGroupDropDown[i].GUIDropDownDisplay(GUILayout.Width(150));
                 id2actionGroup[i] = actionGroupDropDown[i].ActiveSelection;
-/*                GUILayout.BeginHorizontal();
-                currentGuiStrings[i] = GUILayout.TextField(currentGuiStrings[i], GUILayout.Width(150));
-                bool ok = false;
-                try
-                {
-                    id2actionGroup[i] = (KSPActionGroup)Enum.Parse(typeof(KSPActionGroup), currentGuiStrings[i]);
-                    ok = true;
-                    //Debug.Log(String.Format("FAR: set AG {0} to {1}", guiLabels[i], id2actionGroup[i]));
-                }
-                catch   //FIXME with a dropdown list
-                {
-                }
-                GUILayout.Label(ok ? " Ok" : " Invalid", GUILayout.Width(50));
-                GUILayout.EndHorizontal();*/
+                /*                GUILayout.BeginHorizontal();
+                                currentGuiStrings[i] = GUILayout.TextField(currentGuiStrings[i], GUILayout.Width(150));
+                                bool ok = false;
+                                try
+                                {
+                                    id2actionGroup[i] = (KSPActionGroup)Enum.Parse(typeof(KSPActionGroup), currentGuiStrings[i]);
+                                    ok = true;
+                                    //Debug.Log(String.Format("[FAR] Set AG {0} to {1}", guiLabels[i], id2actionGroup[i]));
+                                }
+                                catch   //FIXME with a dropdown list
+                                {
+                                }
+                                GUILayout.Label(ok ? " Ok" : " Invalid", GUILayout.Width(50));
+                                GUILayout.EndHorizontal();*/
             }
             GUILayout.EndVertical();
             GUILayout.EndHorizontal(); // end of columns

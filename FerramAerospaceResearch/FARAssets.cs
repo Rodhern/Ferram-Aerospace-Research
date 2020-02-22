@@ -10,25 +10,28 @@ namespace FerramAerospaceResearch
     class FARAssets : MonoBehaviour
     {
 
-        public static Dictionary<string, Shader> shaderDict;
+        public static Dictionary<string, Material> materialDict;
 
         void Start()
         {
-            shaderDict = new Dictionary<string, Shader>();
+            materialDict = new Dictionary<string, Material>();
 
-            /*Debug.Log("Asset bundles");
-            Debug.Log(AssetLoader.BundleDefinitions.Count);
+            /* Debug.Log("[FAR] Asset bundles");
+            Debug.Log("[FAR] " + AssetLoader.BundleDefinitions.Count);
             foreach (BundleDefinition b in AssetLoader.BundleDefinitions)
             {
-                Debug.Log(b.name + " " + b.createdTime + " " + b.path + " " + b.info + " " + b.urlName);
+                Debug.Log("[FAR] " + b.name + " " + b.createdTime + " " + b.path + " " + b.info + " " + b.urlName);
             }
-            Debug.Log(AssetLoader.AssetDefinitions.Count);
+            Debug.Log("[FAR] " + AssetLoader.AssetDefinitions.Count);
             foreach (AssetDefinition a in AssetLoader.AssetDefinitions)
             {
-                Debug.Log(a.name + " " + a.type + " " + a.path);
+                Debug.Log("[FAR] " + a.name + " " + a.type + " " + a.path);
             }*/
 
-            AssetLoader.LoadAssets(LoadAssets, AssetLoader.GetAssetDefinitionWithName("FerramAerospaceResearch/Shaders/farshaders", "FARCrossSectionGraph"));
+            // AssetLoader.LoadAssets(LoadAssets,
+            // AssetLoader.GetAssetDefinitionWithName("FerramAerospaceResearch/Shaders/farshaders",
+            // "FARCrossSectionGraph"));
+            AssetLoader.LoadAssets(LoadAssets, AssetLoader.GetAssetDefinitionWithName("FerramAerospaceResearch/Assets/farassets", "FARGraphMaterial"));
         }
 
         void LoadAssets(AssetLoader.Loader loader)
@@ -40,9 +43,11 @@ namespace FerramAerospaceResearch
                     continue;
 
                 Type oType = o.GetType();
-
-                if (oType == typeof(Shader))
-                    shaderDict.Add(loader.definitions[i].name, o as Shader);
+                if (oType == typeof(Material))
+                {
+                    Debug.Log("[FAR] Adding material " + loader.definitions[i].name + " to dictionary");
+                    materialDict.Add(loader.definitions[i].name, o as Material);
+                }
             }
         }
     }

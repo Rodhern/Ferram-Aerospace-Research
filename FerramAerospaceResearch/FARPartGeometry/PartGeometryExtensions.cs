@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.1 "Liepmann"
+Ferram Aerospace Research v0.15.9.5 "Lighthill"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -20,25 +20,25 @@ Copyright 2017, Michael Ferrara, aka Ferram4
    You should have received a copy of the GNU General Public License
    along with Ferram Aerospace Research.  If not, see <http://www.gnu.org/licenses/>.
 
-   Serious thanks:		a.g., for tons of bugfixes and code-refactorings   
+   Serious thanks:		a.g., for tons of bugfixes and code-refactorings
 				stupid_chris, for the RealChuteLite implementation
-            			Taverius, for correcting a ton of incorrect values  
+            			Taverius, for correcting a ton of incorrect values
 				Tetryds, for finding lots of bugs and issues and not letting me get away with them, and work on example crafts
-            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates  
-            			ialdabaoth (who is awesome), who originally created Module Manager  
-                        	Regex, for adding RPM support  
-				DaMichel, for some ferramGraph updates and some control surface-related features  
-            			Duxwing, for copy editing the readme  
-   
+            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates
+            			ialdabaoth (who is awesome), who originally created Module Manager
+                        	Regex, for adding RPM support
+				DaMichel, for some ferramGraph updates and some control surface-related features
+            			Duxwing, for copy editing the readme
+
    CompatibilityChecker by Majiir, BSD 2-clause http://opensource.org/licenses/BSD-2-Clause
 
-   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission  
+   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/55219
 
    ModularFLightIntegrator by Sarbian, Starwaster and Ferram4, MIT: http://opensource.org/licenses/MIT
 	http://forum.kerbalspaceprogram.com/threads/118088
 
-   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission  
+   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/60863
  */
 
@@ -57,7 +57,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
         {
             return GetPartOverallMeshBoundsInBasis(part, part.partTransform.worldToLocalMatrix);
         }
-        
+
         public static Bounds GetPartOverallMeshBoundsInBasis(this Part part, Matrix4x4 worldToBasisMatrix)
         {
             var transforms = part.FindModelComponents<Transform>();
@@ -166,7 +166,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
 
                 bounds.Encapsulate(matrix.MultiplyPoint3x4(m.bounds.min));
                 bounds.Encapsulate(matrix.MultiplyPoint3x4(m.bounds.max));
-                
+
             }
             return bounds;
         }
@@ -201,7 +201,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
                 //The first index of each list is the name of the part module; the rest are the transforms
                 if(p.Modules.Contains(currentPartModuleTransforms[0]))
                 {
-                 //   Debug.Log("Part " + p.partInfo.title + " has module " + currentPartModuleTransforms[0] + ".  Getting exempt transforms");
+                    //   Debug.Log("[FAR] Part " + p.partInfo.title + " has module " + currentPartModuleTransforms[0] + ".  Getting exempt transforms");
                     PartModule module = p.Modules[currentPartModuleTransforms[0]];
 
                     for (int j = 1; j < currentPartModuleTransforms.Count; ++j)
@@ -212,11 +212,11 @@ namespace FerramAerospaceResearch.FARPartGeometry
                             Transform.AddRange(p.FindModelComponents<Transform>(transformString));
                         else
                             Transform.AddRange(p.FindModelComponents<Transform>(currentPartModuleTransforms[j]));
-                       
+
                     }
                 }
                 //if (Transform.Count > 0)
-                //    Debug.Log("Total exempt transforms: " + Transform.Count);
+                //    Debug.Log("[FAR] Total exempt transforms: " + Transform.Count);
             }
             foreach (Transform t in p.FindModelComponents<Transform>())
             {
@@ -250,16 +250,16 @@ namespace FerramAerospaceResearch.FARPartGeometry
                 if (field.Name.ToLowerInvariant() == "pagenerated")
                 {
                     procAsteroid = (PAsteroid)field.GetValue(asteroid);
-                    Debug.Log("procAsteroid index " + i);
+                    Debug.Log("[FAR] procAsteroid index " + i);
                     break;
                 }
             }*/
             procAsteroid = (PAsteroid)fields[2].GetValue(asteroid);
             int count = transformList.Count;
-            GetChildTransforms(transformList, procAsteroid.gameObject.transform.FindChild(""));
+            GetChildTransforms(transformList, procAsteroid.gameObject.transform.Find(""));
             count = transformList.Count - count;
 
-            //Debug.Log("New transforms: " + count);
+            //Debug.Log("[FAR] New transforms: " + count);
         }
 
         private static void GetChildTransforms(List<Transform> transformList, Transform parent)

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="16"
+   height="16"
+   viewBox="0 0 4.2333332 4.2333335"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="sprite_debug_voxel.svg"
+   inkscape:export-filename="D:\git\Ferram-Aerospace-Research\Resources\sprite_debug_voxel.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="44.8"
+     inkscape:cx="4.0285846"
+     inkscape:cy="7.9346478"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     units="px"
+     inkscape:window-width="2560"
+     inkscape:window-height="1417"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:pagecheckerboard="true">
+    <inkscape:grid
+       type="axonomgrid"
+       id="grid815"
+       units="mm"
+       empspacing="5" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-292.76665)">
+    <g
+       id="g4565"
+       style="stroke:#2e001b;stroke-width:0.30000001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:9.69999981;stroke-dasharray:none;stroke-opacity:1"
+       transform="matrix(0.89692612,0,0,0.89692612,-0.21361569,29.840707)"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
+      <path
+         inkscape:connector-curvature="0"
+         id="path4556"
+         d="m 0.8660254,294.49998 1.7320508,-1 1.7320507,1 v 2 l -1.7320507,1 -1.7320508,-1 z"
+         style="fill:#9a005c;fill-opacity:0.39560439;stroke:#2e001b;stroke-width:0.30000001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:9.69999981;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4558"
+         d="m 0.8660254,294.49998 1.7320508,1 v 2"
+         style="fill:none;stroke:#2e001b;stroke-width:0.30000001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:9.69999981;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4560"
+         d="m 2.5980762,295.49998 1.7320507,-1"
+         style="fill:none;stroke:#2e001b;stroke-width:0.30000001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:9.69999981;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
+  </g>
+</svg>

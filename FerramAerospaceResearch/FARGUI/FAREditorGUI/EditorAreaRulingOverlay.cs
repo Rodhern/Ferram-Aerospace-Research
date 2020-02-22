@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.1 "Liepmann"
+Ferram Aerospace Research v0.15.9.5 "Lighthill"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -20,25 +20,25 @@ Copyright 2017, Michael Ferrara, aka Ferram4
    You should have received a copy of the GNU General Public License
    along with Ferram Aerospace Research.  If not, see <http://www.gnu.org/licenses/>.
 
-   Serious thanks:		a.g., for tons of bugfixes and code-refactorings   
+   Serious thanks:		a.g., for tons of bugfixes and code-refactorings
 				stupid_chris, for the RealChuteLite implementation
-            			Taverius, for correcting a ton of incorrect values  
+            			Taverius, for correcting a ton of incorrect values
 				Tetryds, for finding lots of bugs and issues and not letting me get away with them, and work on example crafts
-            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates  
-            			ialdabaoth (who is awesome), who originally created Module Manager  
-                        	Regex, for adding RPM support  
-				DaMichel, for some ferramGraph updates and some control surface-related features  
-            			Duxwing, for copy editing the readme  
-   
+            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates
+            			ialdabaoth (who is awesome), who originally created Module Manager
+                        	Regex, for adding RPM support
+				DaMichel, for some ferramGraph updates and some control surface-related features
+            			Duxwing, for copy editing the readme
+
    CompatibilityChecker by Majiir, BSD 2-clause http://opensource.org/licenses/BSD-2-Clause
 
-   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission  
+   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/55219
 
    ModularFLightIntegrator by Sarbian, Starwaster and Ferram4, MIT: http://opensource.org/licenses/MIT
 	http://forum.kerbalspaceprogram.com/threads/118088
 
-   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission  
+   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/60863
  */
 
@@ -99,21 +99,23 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
             if (_rendererMaterial == null)
             {
 
-                Shader lineShader;
+                Material lineMaterial;
 
-                if (!FARAssets.shaderDict.TryGetValue("FARCrossSectionGraph", out lineShader))
+                if (!FARAssets.materialDict.TryGetValue("FARGraphMaterial", out lineMaterial))
                 {
                     //TODO: definitely replace this with a proper shader when we can
-                    Debug.Log("Could not load cross-section shader; using fallback shader");
-                    lineShader = Shader.Find("Sprites/Default");
+                    Debug.Log("[FAR] Could not load cross-section shader; using fallback shader");
+                    lineMaterial = new Material(Shader.Find("Sprites/Default"));
                 }
 
-                _rendererMaterial = new Material(lineShader);
+                _rendererMaterial = new Material(lineMaterial);
                 _rendererMaterial.hideFlags = HideFlags.HideAndDontSave;
                 _rendererMaterial.shader.hideFlags = HideFlags.HideAndDontSave;
                 _rendererMaterial.renderQueue = 4500;
             }
 
+            // Debug.Log("[FAR] Creating renderers with material " + _rendererMaterial);
+            // Debug.Log("[FAR] Area color: " + _crossSectionColor + ", Deriv: " + _derivColor + ", Coeff: " + Color.cyan + ", Marking: " + _axisColor);
             _areaRenderer = CreateNewRenderer(_crossSectionColor, 0.1f, _rendererMaterial);
             _derivRenderer = CreateNewRenderer(_derivColor, 0.1f, _rendererMaterial);
             _coeffRenderer = CreateNewRenderer(Color.cyan, 0.1f, _rendererMaterial);
@@ -155,11 +157,26 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
 
             LineRenderer renderer = o.gameObject.AddComponent<LineRenderer>();
 
+            // need to copy the material properties so the same material is not
+            // reused between renderers
+            Material rendererMaterial = new Material(material);
+            // rendererMaterial.CopyPropertiesFromMaterial(material);
+
             renderer.useWorldSpace = false;
-            renderer.material = material;
-            renderer.SetColors(color, color);
+            if (material.HasProperty("_Color"))
+            {
+                // Debug.Log("[FAR] Setting _Color on " + material + "to " + color);
+                rendererMaterial.SetColor("_Color", color);
+            }
+            else
+                Debug.LogWarning("[FAR] Material " + material + " has no _Color property");
+            renderer.material = rendererMaterial;
+            // renderer.startColor = color;
+            // renderer.endColor = color;
             renderer.enabled = false;
-            renderer.SetWidth(width, width);
+            //renderer.startWidth = width;   // Rodhern: Downgrade to KSP 1.3.1
+            //renderer.endWidth = width;     //  --
+            renderer.SetWidth(width, width); //  --
             renderer.sortingOrder = 1;
 
             return renderer;
@@ -331,7 +348,8 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
             renderer.transform.localRotation = Quaternion.identity;
             renderer.transform.SetAsFirstSibling();
 
-            renderer.SetVertexCount(xCoords.Length);
+            // renderer.positionCount = xCoords.Length; // Rodhern: Downgrade to KSP 1.3.1
+            renderer.SetVertexCount(xCoords.Length);    //  --
 
             for (int i = 0; i < xCoords.Length; i++)
             {

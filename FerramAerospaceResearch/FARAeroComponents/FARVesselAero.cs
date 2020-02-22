@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.1 "Liepmann"
+Ferram Aerospace Research v0.15.9.5 "Lighthill"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -20,25 +20,25 @@ Copyright 2017, Michael Ferrara, aka Ferram4
    You should have received a copy of the GNU General Public License
    along with Ferram Aerospace Research.  If not, see <http://www.gnu.org/licenses/>.
 
-   Serious thanks:		a.g., for tons of bugfixes and code-refactorings   
+   Serious thanks:		a.g., for tons of bugfixes and code-refactorings
 				stupid_chris, for the RealChuteLite implementation
-            			Taverius, for correcting a ton of incorrect values  
+            			Taverius, for correcting a ton of incorrect values
 				Tetryds, for finding lots of bugs and issues and not letting me get away with them, and work on example crafts
-            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates  
-            			ialdabaoth (who is awesome), who originally created Module Manager  
-                        	Regex, for adding RPM support  
-				DaMichel, for some ferramGraph updates and some control surface-related features  
-            			Duxwing, for copy editing the readme  
-   
+            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates
+            			ialdabaoth (who is awesome), who originally created Module Manager
+                        	Regex, for adding RPM support
+				DaMichel, for some ferramGraph updates and some control surface-related features
+            			Duxwing, for copy editing the readme
+
    CompatibilityChecker by Majiir, BSD 2-clause http://opensource.org/licenses/BSD-2-Clause
 
-   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission  
+   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/55219
 
    ModularFLightIntegrator by Sarbian, Starwaster and Ferram4, MIT: http://opensource.org/licenses/MIT
 	http://forum.kerbalspaceprogram.com/threads/118088
 
-   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission  
+   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/60863
  */
 
@@ -101,7 +101,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
 
         protected override void OnStart()
         {
-            Debug.Log("FARVesselAero on " + vessel.name + " reporting startup");
+            Debug.Log("[FAR] FARVesselAero on " + vessel.name + " reporting startup");
             base.OnStart();
 
             if (!CompatibilityChecker.IsAllCompatible())
@@ -151,7 +151,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
                 }
                 if (p.Modules.Contains<KerbalEVA>() || p.Modules.Contains<FlagSite>())
                 {
-                    Debug.Log("Handling Stuff for KerbalEVA / Flag");
+                    Debug.Log("[FAR] Handling Stuff for KerbalEVA / Flag");
                     g = (GeometryPartModule)p.AddModule("GeometryPartModule");
                     g.OnStart(StartState());
                     p.AddModule("FARAeroPartModule").OnStart(StartState());
@@ -160,13 +160,13 @@ namespace FerramAerospaceResearch.FARAeroComponents
             }
             RequestUpdateVoxel(false);
 
-            this.enabled = true;            
+            this.enabled = true;
             //GameEvents.onVesselLoaded.Add(VesselUpdateEvent);
             //GameEvents.onVesselChange.Add(VesselUpdateEvent);
             //GameEvents.onVesselLoaded.Add(VesselUpdate);
             //GameEvents.onVesselCreate.Add(VesselUpdateEvent);
 
-            //Debug.Log("Starting " + _vessel.vesselName + " aero properties");
+            //Debug.Log("[FAR] Starting " + _vessel.vesselName + " aero properties");
         }
 
         private PartModule.StartState StartState()
@@ -222,14 +222,14 @@ namespace FerramAerospaceResearch.FARAeroComponents
                     _flightGUI = vessel.GetComponent<FerramAerospaceResearch.FARGUI.FARFlightGUI.FlightGUI>();
 
                 _flightGUI.UpdateAeroModules(_currentAeroModules, _legacyWingModels);
-                //Debug.Log("Updating " + _vessel.vesselName + " aero properties\n\rCross-Sectional Area: " + _vehicleAero.MaxCrossSectionArea + " Crit Mach: " + _vehicleAero.CriticalMach + "\n\rUnusedAeroCount: " + _unusedAeroModules.Count + " UsedAeroCount: " + _currentAeroModules.Count + " sectCount: " + _currentAeroSections.Count);
+                //Debug.Log("[FAR] Updating " + _vessel.vesselName + " aero properties\n\rCross-Sectional Area: " + _vehicleAero.MaxCrossSectionArea + " Crit Mach: " + _vehicleAero.CriticalMach + "\n\rUnusedAeroCount: " + _unusedAeroModules.Count + " UsedAeroCount: " + _currentAeroModules.Count + " sectCount: " + _currentAeroSections.Count);
 
                 for (int i = 0; i < _unusedAeroModules.Count; i++)
                 {
                     FARAeroPartModule a = _unusedAeroModules[i];
                     a.SetShielded(true);
                     a.ForceLegacyAeroUpdates();
-                    //Debug.Log(a.part.partInfo.title + " shielded, area: " + a.ProjectedAreas.totalArea);
+                    //Debug.Log("[FAR] " + a.part.partInfo.title + " shielded, area: " + a.ProjectedAreas.totalArea);
                 }
 
                 for (int i = 0; i < _currentAeroModules.Count; i++)
@@ -237,12 +237,12 @@ namespace FerramAerospaceResearch.FARAeroComponents
                     FARAeroPartModule a = _currentAeroModules[i];
                     a.SetShielded(false);
                     a.ForceLegacyAeroUpdates();
-                    //Debug.Log(a.part.partInfo.title + " unshielded, area: " + a.ProjectedAreas.totalArea);
+                    //Debug.Log("[FAR] " + a.part.partInfo.title + " unshielded, area: " + a.ProjectedAreas.totalArea);
                 }
 
                 _vesselIntakeRamDrag.UpdateAeroData(_currentAeroModules, _unusedAeroModules);
             }
-            if (FlightGlobals.ready && _currentAeroSections != null && vessel)                
+            if (FlightGlobals.ready && _currentAeroSections != null && vessel)
                 CalculateAndApplyVesselAeroProperties();
             if (_currentGeoModules.Count > geoModulesReady)
             {
@@ -293,7 +293,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
                     FARAeroPartModule m = _currentAeroModules[i];
                     m.UpdateVelocityAndAngVelocity(frameVel);
                 }*/
-            
+
             for (int i = 0; i < _currentAeroSections.Count; i++)
                 _currentAeroSections[i].FlightCalculateAeroForces(atmDensity, (float)machNumber, reynoldsPerLength, pseudoKnudsenNumber, skinFrictionDragCoefficient);
 
@@ -335,18 +335,21 @@ namespace FerramAerospaceResearch.FARAeroComponents
             float pseudoKnudsenNumber = machNumber / (reynoldsNumber + machNumber);
             float skinFriction = (float)FARAeroUtil.SkinFrictionDrag(reynoldsNumber, machNumber);
 
-            for (int i = 0; i < _currentAeroSections.Count; i++)
+            if (_currentAeroSections != null)
             {
-                FARAeroSection curSection = _currentAeroSections[i];
-                if(curSection != null)
-                    curSection.PredictionCalculateAeroForces(density, machNumber, reynoldsPerLength, pseudoKnudsenNumber, skinFriction, velocityWorldVector, center);
-            }
+                for (int i = 0; i < _currentAeroSections.Count; i++)
+                {
+                    FARAeroSection curSection = _currentAeroSections[i];
+                    if(curSection != null)
+                        curSection.PredictionCalculateAeroForces(density, machNumber, reynoldsPerLength, pseudoKnudsenNumber, skinFriction, velocityWorldVector, center);
+                }
 
-            for (int i = 0; i < _legacyWingModels.Count; i++)
-            {
-                FARWingAerodynamicModel curWing = _legacyWingModels[i];
-                if ((object)curWing != null)
-                    curWing.PrecomputeCenterOfLift(velocityWorldVector, FlightEnv.NewPredicted(vessel.mainBody, altitude, machNumber), center); // Rodhern: It seems that this method, 'SimulateAeroProperties', is only used in FARAPI, which in turn can be used by say KSPTrajectories.
+                for (int i = 0; i < _legacyWingModels.Count; i++)
+                {
+                    FARWingAerodynamicModel curWing = _legacyWingModels[i];
+                    if ((object)curWing != null)
+                        curWing.PrecomputeCenterOfLift(velocityWorldVector, FlightEnv.NewPredicted(vessel.mainBody, altitude, machNumber), center); // Rodhern: It seems that this method, 'SimulateAeroProperties', is only used in FARAPI, which in turn can be used by say KSPTrajectories.
+                }
             }
 
             aeroForce = center.force;
@@ -464,7 +467,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
              if(_currentGeoModules.Count == 0)
              {
                  DisableModule();
-                 Debug.Log("Disabling FARVesselAero on " + vessel.name + " due to no FARGeometryModules on board");
+                 Debug.Log("[FAR] Disabling FARVesselAero on " + vessel.name + " due to no FARGeometryModules on board");
              }
 
              TriggerIGeometryUpdaters();
@@ -490,7 +493,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
              if(!_updateQueued)
                 setup = true;
 
-             Debug.Log("Updating vessel voxel for " + vessel.vesselName);
+             Debug.Log("[FAR] Updating vessel voxel for " + vessel.vesselName);
          }
 
         //TODO: have this grab from a config file

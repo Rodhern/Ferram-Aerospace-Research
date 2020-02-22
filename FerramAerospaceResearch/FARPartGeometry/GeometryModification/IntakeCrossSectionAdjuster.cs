@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.1 "Liepmann"
+Ferram Aerospace Research v0.15.9.5 "Lighthill"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -20,25 +20,25 @@ Copyright 2017, Michael Ferrara, aka Ferram4
    You should have received a copy of the GNU General Public License
    along with Ferram Aerospace Research.  If not, see <http://www.gnu.org/licenses/>.
 
-   Serious thanks:		a.g., for tons of bugfixes and code-refactorings   
+   Serious thanks:		a.g., for tons of bugfixes and code-refactorings
 				stupid_chris, for the RealChuteLite implementation
-            			Taverius, for correcting a ton of incorrect values  
+            			Taverius, for correcting a ton of incorrect values
 				Tetryds, for finding lots of bugs and issues and not letting me get away with them, and work on example crafts
-            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates  
-            			ialdabaoth (who is awesome), who originally created Module Manager  
-                        	Regex, for adding RPM support  
-				DaMichel, for some ferramGraph updates and some control surface-related features  
-            			Duxwing, for copy editing the readme  
-   
+            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates
+            			ialdabaoth (who is awesome), who originally created Module Manager
+                        	Regex, for adding RPM support
+				DaMichel, for some ferramGraph updates and some control surface-related features
+            			Duxwing, for copy editing the readme
+
    CompatibilityChecker by Majiir, BSD 2-clause http://opensource.org/licenses/BSD-2-Clause
 
-   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission  
+   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/55219
 
    ModularFLightIntegrator by Sarbian, Starwaster and Ferram4, MIT: http://opensource.org/licenses/MIT
 	http://forum.kerbalspaceprogram.com/threads/118088
 
-   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission  
+   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/60863
  */
 
@@ -97,7 +97,7 @@ namespace FerramAerospaceResearch.FARPartGeometry.GeometryModification
         }
 
         private IntakeCrossSectionAdjuster() { }
-        
+
         public void SetupAdjuster(PartModule intake, Matrix4x4 worldToVesselMatrix)
         {
             this.part = intake.part;
@@ -107,8 +107,8 @@ namespace FerramAerospaceResearch.FARPartGeometry.GeometryModification
                 intakeTrans = intake.part.partTransform;
 
             if (!string.IsNullOrEmpty(intakeModule.occludeNode))
-                node = intakeModule.node; 
-            
+                node = intakeModule.node;
+
             foreach (AttachNode candidateNode in part.attachNodes)
                 if (candidateNode.nodeType == AttachNode.NodeType.Stack && Vector3.Dot(candidateNode.position, (part.transform.worldToLocalMatrix * intakeTrans.localToWorldMatrix).MultiplyVector(Vector3.forward)) > 0)
                 {
@@ -202,7 +202,7 @@ namespace FerramAerospaceResearch.FARPartGeometry.GeometryModification
         }
 
         public int GetForwardBackwardNoFlowSign() { return sign; }
-        
+
         public void TransformBasis(Matrix4x4 matrix)
         {
             Matrix4x4 tempMatrix = thisToVesselMatrix.inverse;

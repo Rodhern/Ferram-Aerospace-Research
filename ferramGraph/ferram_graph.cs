@@ -15,11 +15,11 @@ Copyright 2014, Michael Ferrara, aka Ferram4
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with FerramGraph.  If not, see <http://www.gnu.org/licenses/>. * 
+    along with FerramGraph.  If not, see <http://www.gnu.org/licenses/>. *
 
  * Disclaimer: You use this at your own risk; this is an alpha plugin for an alpha game; if your computer disintigrates, it's not my fault. :P
- * 
- * 
+ *
+ *
  */
 
 using System;
@@ -281,7 +281,6 @@ namespace ferram4
         }
 
 
-
         protected Texture2D graph;
         protected Rect displayRect = new Rect(0, 0, 0, 0);
 
@@ -358,16 +357,15 @@ namespace ferram4
             if (pixelWidth <= 1)
             {
                 pixelWidth = 5;
-                Debug.Log("Warning! Grid width scale too fine for scaling; picking safe alternative");
+                Debug.Log("[FAR] Warning! Grid width scale too fine for scaling; picking safe alternative");
             }
             if (pixelHeight <= 1)
             {
                 pixelHeight = 5;
-                Debug.Log("Warning! Grid height scale too fine for scaling; picking safe alternative");
+                Debug.Log("[FAR] Warning! Grid height scale too fine for scaling; picking safe alternative");
             }
 
             SetGridScaleUsingPixels(pixelWidth, pixelHeight);
-            
 
         }
 
@@ -375,7 +373,7 @@ namespace ferram4
         {
             if (!allLines.ContainsKey(lineName))
             {
-                MonoBehaviour.print("Error: No line with that name exists");
+                MonoBehaviour.print("[FAR] Error: No line with that name exists");
                 return;
             }
             ferramGraphLine line;
@@ -468,7 +466,7 @@ namespace ferram4
         {
             Color lineColor = Color.red;
             AddLine(lineName, xValues, yValues, lineColor, lineThickness);
-        }        
+        }
 
         public void AddLine(string lineName, double[] xValues, double[] yValues, Color lineColor, int lineThickness)
         {

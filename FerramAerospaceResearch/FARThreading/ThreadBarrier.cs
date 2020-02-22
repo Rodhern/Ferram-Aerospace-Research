@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.1 "Liepmann"
+Ferram Aerospace Research v0.15.9.5 "Lighthill"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -20,25 +20,25 @@ Copyright 2017, Michael Ferrara, aka Ferram4
    You should have received a copy of the GNU General Public License
    along with Ferram Aerospace Research.  If not, see <http://www.gnu.org/licenses/>.
 
-   Serious thanks:		a.g., for tons of bugfixes and code-refactorings   
+   Serious thanks:		a.g., for tons of bugfixes and code-refactorings
 				stupid_chris, for the RealChuteLite implementation
-            			Taverius, for correcting a ton of incorrect values  
+            			Taverius, for correcting a ton of incorrect values
 				Tetryds, for finding lots of bugs and issues and not letting me get away with them, and work on example crafts
-            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates  
-            			ialdabaoth (who is awesome), who originally created Module Manager  
-                        	Regex, for adding RPM support  
-				DaMichel, for some ferramGraph updates and some control surface-related features  
-            			Duxwing, for copy editing the readme  
-   
+            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates
+            			ialdabaoth (who is awesome), who originally created Module Manager
+                        	Regex, for adding RPM support
+				DaMichel, for some ferramGraph updates and some control surface-related features
+            			Duxwing, for copy editing the readme
+
    CompatibilityChecker by Majiir, BSD 2-clause http://opensource.org/licenses/BSD-2-Clause
 
-   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission  
+   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/55219
 
    ModularFLightIntegrator by Sarbian, Starwaster and Ferram4, MIT: http://opensource.org/licenses/MIT
 	http://forum.kerbalspaceprogram.com/threads/118088
 
-   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission  
+   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/60863
  */
 
@@ -103,7 +103,7 @@ namespace FerramAerospaceResearch.FARThreading
 
                         lock (sweepPlane)           //Used as generic locker in solidification; due to careful design, locks are not needed for reading and writing to indices, so this slows nothing
                 {
-                    Debug.Log("Entered 1 " + threadInd);
+                    Debug.Log("[FAR] Entered 1 " + threadInd);
                     synced = false;         //first, identify that we are not synced
                     threadsQueued--;          //Decrement items queued, since we are completed
 
@@ -116,10 +116,10 @@ namespace FerramAerospaceResearch.FARThreading
                     {                                //If all items are completed, then the 0th thread continues
                         threadsQueued = 4;               //It then increments itemsQueued to the number of total threads
                         synced = true;                  //And indicates that we are synced
-                        Debug.Log("bleh");
+                        Debug.Log("[FAR] bleh");
                     }
                     Monitor.PulseAll(sweepPlane);   //And pulses all the others so that work may continue
-                    Debug.Log("Leaving 1 " + threadInd);
+                    Debug.Log("[FAR] Leaving 1 " + threadInd);
                 }*/
 
     }

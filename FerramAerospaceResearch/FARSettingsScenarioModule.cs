@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.1 "Liepmann"
+Ferram Aerospace Research v0.15.9.5 "Lighthill"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -20,25 +20,25 @@ Copyright 2017, Michael Ferrara, aka Ferram4
    You should have received a copy of the GNU General Public License
    along with Ferram Aerospace Research.  If not, see <http://www.gnu.org/licenses/>.
 
-   Serious thanks:		a.g., for tons of bugfixes and code-refactorings   
+   Serious thanks:		a.g., for tons of bugfixes and code-refactorings
 				stupid_chris, for the RealChuteLite implementation
-            			Taverius, for correcting a ton of incorrect values  
+            			Taverius, for correcting a ton of incorrect values
 				Tetryds, for finding lots of bugs and issues and not letting me get away with them, and work on example crafts
-            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates  
-            			ialdabaoth (who is awesome), who originally created Module Manager  
-                        	Regex, for adding RPM support  
-				DaMichel, for some ferramGraph updates and some control surface-related features  
-            			Duxwing, for copy editing the readme  
-   
+            			sarbian, for refactoring code for working with MechJeb, and the Module Manager updates
+            			ialdabaoth (who is awesome), who originally created Module Manager
+                        	Regex, for adding RPM support
+				DaMichel, for some ferramGraph updates and some control surface-related features
+            			Duxwing, for copy editing the readme
+
    CompatibilityChecker by Majiir, BSD 2-clause http://opensource.org/licenses/BSD-2-Clause
 
-   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission  
+   Part.cfg changes powered by sarbian & ialdabaoth's ModuleManager plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/55219
 
    ModularFLightIntegrator by Sarbian, Starwaster and Ferram4, MIT: http://opensource.org/licenses/MIT
 	http://forum.kerbalspaceprogram.com/threads/118088
 
-   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission  
+   Toolbar integration powered by blizzy78's Toolbar plugin; used with permission
 	http://forum.kerbalspaceprogram.com/threads/60863
  */
 
@@ -73,7 +73,7 @@ namespace FerramAerospaceResearch
         public static FARVoxelSettings VoxelSettings
         {
             get
-            { 
+            {
                 return Instance.voxelSettings;
             }
         }
@@ -106,7 +106,7 @@ namespace FerramAerospaceResearch
             if (instance == null)
             {
                 instance = new FARSettingsScenarioModule();
-                Debug.Log("Creating new setting module for tutorial/scenario");
+                Debug.Log("[FAR] Creating new setting module for tutorial/scenario");
                 instance.OnLoad(new ConfigNode());
                 instance.Start();
             }
@@ -130,11 +130,11 @@ namespace FerramAerospaceResearch
             //if (newGame)
             //    PopupDialog.SpawnPopupDialog("Ferram Aerospace Research", "Welcome to KSP with FAR!\n\r\n\rThings will be much harder from here on out; the FAR button in the top-right corner will bring you to difficulty settings if you ever decide to change them.  Have fun!", "OK", false, HighLogic.Skin);
 
-            Debug.Log("FAR Vehicle Voxel Setup started");
+            Debug.Log("[FAR] FAR Vehicle Voxel Setup started");
             FerramAerospaceResearch.FARAeroComponents.FARAeroSection.GenerateCrossFlowDragCurve();
             VehicleVoxel.VoxelSetup();
             PhysicsGlobals.DragCubeMultiplier = 0;
-            Debug.Log("FAR Vehicle Voxel Setup complete");
+            Debug.Log("[FAR] FAR Vehicle Voxel Setup complete");
 
             //GameEvents.onGameStateSave.Add(OnSave);
             newGame = false;
@@ -148,7 +148,7 @@ namespace FerramAerospaceResearch
 
         public override void OnSave(ConfigNode node)
         {
-            Debug.Log("saved");
+            Debug.Log("[FAR] saved");
             node.AddValue("newGame", newGame);
             node.AddValue("fractionTransonicDrag", settings.fractionTransonicDrag);
             node.AddValue("gaussianVehicleLengthFractionForSmoothing", settings.gaussianVehicleLengthFractionForSmoothing);
@@ -162,7 +162,7 @@ namespace FerramAerospaceResearch
 
             FARGUI.FARFlightGUI.FlightGUI.SaveActiveData();
             ConfigNode flightGUINode = new ConfigNode("FlightGUISettings");
-            Debug.Log("Saving FAR Data");
+            Debug.Log("[FAR] Saving FAR Data");
             for (int i = 0; i < flightGUISettings.Count; i++)
             {
                 flightGUINode.AddNode(flightGUISettings[i]);
@@ -220,7 +220,7 @@ namespace FerramAerospaceResearch
             currentIndex = index;
 
 
-            Debug.Log("Loading FAR Data");
+            Debug.Log("[FAR] Loading FAR Data");
             flightGUISettings = new List<ConfigNode>();
             if(node.HasNode("FlightGUISettings"))
             {
@@ -254,8 +254,8 @@ namespace FerramAerospaceResearch
 
             tmp = new FARDifficultyAndExactnessSettings(1, 0.015, 2, 1, 4);
             presets.Add(tmp);
-            presetNames.Add("Full Drag, Moderate Area Ruling"); 
-            
+            presetNames.Add("Full Drag, Moderate Area Ruling");
+
             tmp = new FARDifficultyAndExactnessSettings(1, 0.010, 1, 1, 5);
             presets.Add(tmp);
             presetNames.Add("Full Drag, Strict Area Ruling");
@@ -366,4 +366,4 @@ namespace FerramAerospaceResearch
         }
     }
 }
-            
+
