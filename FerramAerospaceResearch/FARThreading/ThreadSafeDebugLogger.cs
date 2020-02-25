@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.5 "Lighthill"
+Ferram Aerospace Research v0.15.9.6 "Lin"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -45,6 +45,7 @@ Copyright 2017, Michael Ferrara, aka Ferram4
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using FerramAerospaceResearch.FARUtils;
 
 namespace FerramAerospaceResearch.FARThreading
 {
@@ -73,7 +74,7 @@ namespace FerramAerospaceResearch.FARThreading
             if (_exceptionsThrown.Count > 0)
             {
                 for (int i = 0; i < _exceptionsThrown.Count; i++)
-                    Debug.LogException(_exceptionsThrown[i]);
+                    FARLogger.Exception(_exceptionsThrown[i]);
 
                 _exceptionsThrown.Clear();
             }
@@ -87,7 +88,7 @@ namespace FerramAerospaceResearch.FARThreading
 
                 _debugMessages.Clear();
 
-                Debug.Log("[FAR] " + sB.ToString());
+                FARLogger.Info("" + sB.ToString());
             }
 
         }

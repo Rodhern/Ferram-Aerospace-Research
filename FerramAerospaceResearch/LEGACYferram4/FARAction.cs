@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.5 "Lighthill"
+Ferram Aerospace Research v0.15.9.6 "Lin"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -49,6 +49,7 @@ using KSP;
 using KSP.Localization;
 using FerramAerospaceResearch;
 using FerramAerospaceResearch.FARGUI;
+using FerramAerospaceResearch.FARUtils;
 
 namespace ferram4
 {
@@ -120,11 +121,11 @@ namespace ferram4
                 {
                     id2actionGroup[i] = (KSPActionGroup)Enum.Parse(typeof(KSPActionGroup), config.GetValue(configKeys[i], id2actionGroup[i].ToString())); ;
                     currentGuiStrings[i] = id2actionGroup[i].ToString(); // don't forget to initialize the gui
-                    Debug.Log(String.Format("[FAR] Loaded AG {0} as {1}", configKeys[i], id2actionGroup[i]));
+                    FARLogger.Info(String.Format("Loaded AG {0} as {1}", configKeys[i], id2actionGroup[i]));
                 }
                 catch (Exception e)
                 {
-                    Debug.LogWarning("[FAR] Error reading config key '" + configKeys[i] + "' with value '" + config.GetValue(configKeys[i], "n/a") + "' gave " + e.ToString());
+                    FARLogger.Warning("Error reading config key '" + configKeys[i] + "' with value '" + config.GetValue(configKeys[i], "n/a") + "' gave " + e.ToString());
                 }
                 int initIndex = 0;
                 for(int j = 0; j < agTypes.Length; j++)
@@ -145,7 +146,7 @@ namespace ferram4
             KSP.IO.PluginConfiguration config = FARDebugAndSettings.config;
             for (int i = 0; i < ACTION_COUNT; ++i)
             {
-                Debug.Log(String.Format("[FAR] Save AG {0} as {1}", configKeys[i], id2actionGroup[i]));
+                FARLogger.Info(String.Format("Save AG {0} as {1}", configKeys[i], id2actionGroup[i]));
                 config.SetValue(configKeys[i], id2actionGroup[i].ToString());
             }
         }
@@ -174,7 +175,7 @@ namespace ferram4
                                 {
                                     id2actionGroup[i] = (KSPActionGroup)Enum.Parse(typeof(KSPActionGroup), currentGuiStrings[i]);
                                     ok = true;
-                                    //Debug.Log(String.Format("[FAR] Set AG {0} to {1}", guiLabels[i], id2actionGroup[i]));
+                                    //FARLogger.Info(String.Format("Set AG {0} to {1}", guiLabels[i], id2actionGroup[i]));
                                 }
                                 catch   //FIXME with a dropdown list
                                 {

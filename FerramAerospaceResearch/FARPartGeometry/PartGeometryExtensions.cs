@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.5 "Lighthill"
+Ferram Aerospace Research v0.15.9.6 "Lin"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -201,7 +201,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
                 //The first index of each list is the name of the part module; the rest are the transforms
                 if(p.Modules.Contains(currentPartModuleTransforms[0]))
                 {
-                    //   Debug.Log("[FAR] Part " + p.partInfo.title + " has module " + currentPartModuleTransforms[0] + ".  Getting exempt transforms");
+                    //   FARLogger.Info("Part " + p.partInfo.title + " has module " + currentPartModuleTransforms[0] + ".  Getting exempt transforms");
                     PartModule module = p.Modules[currentPartModuleTransforms[0]];
 
                     for (int j = 1; j < currentPartModuleTransforms.Count; ++j)
@@ -216,7 +216,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
                     }
                 }
                 //if (Transform.Count > 0)
-                //    Debug.Log("[FAR] Total exempt transforms: " + Transform.Count);
+                //    FARLogger.Info("Total exempt transforms: " + Transform.Count);
             }
             foreach (Transform t in p.FindModelComponents<Transform>())
             {
@@ -250,7 +250,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
                 if (field.Name.ToLowerInvariant() == "pagenerated")
                 {
                     procAsteroid = (PAsteroid)field.GetValue(asteroid);
-                    Debug.Log("[FAR] procAsteroid index " + i);
+                    FARLogger.Info("procAsteroid index " + i);
                     break;
                 }
             }*/
@@ -259,7 +259,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
             GetChildTransforms(transformList, procAsteroid.gameObject.transform.Find(""));
             count = transformList.Count - count;
 
-            //Debug.Log("[FAR] New transforms: " + count);
+            //FARLogger.Info("New transforms: " + count);
         }
 
         private static void GetChildTransforms(List<Transform> transformList, Transform parent)

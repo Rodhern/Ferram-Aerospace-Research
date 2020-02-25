@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.5 "Lighthill"
+Ferram Aerospace Research v0.15.9.6 "Lin"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -48,6 +48,7 @@ using System.Linq;
 using System.IO;
 using UnityEngine;
 using ferram4;
+using FerramAerospaceResearch.FARUtils;
 
 namespace FerramAerospaceResearch
 {
@@ -306,7 +307,7 @@ namespace FerramAerospaceResearch
             get{
                 if (prandtlMeyerMach == null)
                 {
-                    MonoBehaviour.print("Prandlt-Meyer Expansion Curves Initialized");
+                    FARLogger.Info("Prandlt-Meyer Expansion Curves Initialized");
                     prandtlMeyerMach = new FloatCurve();
                     prandtlMeyerAngle = new FloatCurve();
                     double M = 1;
@@ -360,7 +361,7 @@ namespace FerramAerospaceResearch
             {
                 if (prandtlMeyerAngle == null)
                 {
-                    MonoBehaviour.print("Prandlt-Meyer Expansion Curves Initialized");
+                    FARLogger.Info("Prandlt-Meyer Expansion Curves Initialized");
                     prandtlMeyerMach = new FloatCurve();
                     prandtlMeyerAngle = new FloatCurve();
                     double M = 1;
@@ -534,7 +535,7 @@ namespace FerramAerospaceResearch
                     // different from the one after the parts are attached.
                     RaycastMaskEdit = RaycastMaskVal | (1 << LayerMask.NameToLayer("Ignore Raycast"));
 
-                    Debug.Log("[FAR] FAR Raycast mask: "+RaycastMaskVal+" "+RaycastMaskEdit);
+                    FARLogger.Info("Raycast mask: "+RaycastMaskVal+" "+RaycastMaskEdit);
                 }
 
                 return EditorAboutToAttach(true) ? RaycastMaskEdit : RaycastMaskVal;

@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.5 "Lighthill"
+Ferram Aerospace Research v0.15.9.6 "Lin"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -46,6 +46,7 @@ using System;
 using System.Collections.Generic;
 using ModularFI;
 using UnityEngine;
+using FerramAerospaceResearch.FARUtils;
 
 namespace FerramAerospaceResearch.FARAeroComponents
 {
@@ -54,14 +55,14 @@ namespace FerramAerospaceResearch.FARAeroComponents
     {
         void Start()
         {
-            Debug.Log("[FAR] FAR Modular Flight Integrator function registration started");
+            FARLogger.Info("Modular Flight Integrator function registration started");
             ModularFI.ModularFlightIntegrator.RegisterUpdateAerodynamicsOverride(UpdateAerodynamics);
             ModularFI.ModularFlightIntegrator.RegisterUpdateThermodynamicsPre(UpdateThermodynamicsPre);
             ModularFI.ModularFlightIntegrator.RegisterCalculateAreaExposedOverride(CalculateAreaRadiative);
             ModularFI.ModularFlightIntegrator.RegisterCalculateAreaRadiativeOverride(CalculateAreaRadiative);
             ModularFI.ModularFlightIntegrator.RegisterGetSunAreaOverride(CalculateSunArea);
             ModularFI.ModularFlightIntegrator.RegisterGetBodyAreaOverride(CalculateBodyArea);
-            Debug.Log("[FAR] FAR Modular Flight Integrator function registration complete");
+            FARLogger.Info("Modular Flight Integrator function registration complete");
             GameObject.Destroy(this);
         }
 
@@ -87,7 +88,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
                 //fi.SetSkinProperties(ptd);
             }
             //fi.timeSinceLastUpdate = 0;
-            //Debug.Log("[FAR] MFI: " + fi.CoM + " " + Planetarium.GetUniversalTime());
+            //FARLogger.Info("MFI: " + fi.CoM + " " + Planetarium.GetUniversalTime());
         }
 
         void UpdateAerodynamics(ModularFI.ModularFlightIntegrator fi, Part part)

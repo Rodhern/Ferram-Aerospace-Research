@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.5 "Lighthill"
+Ferram Aerospace Research v0.15.9.6 "Lin"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -121,7 +121,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
             if (pingPongAoAFactor >= 2)
                 pingPongAoAFactor = 0;
 
-            //Debug.Log("[FAR] " + velArrow.Direction);
+            //FARLogger.Info("" + velArrow.Direction);
         }
 
         void SetAngleVectors(double lowerAoA, double upperAoA)

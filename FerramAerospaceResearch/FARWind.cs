@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.5 "Lighthill"
+Ferram Aerospace Research v0.15.9.6 "Lin"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -47,6 +47,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using FerramAerospaceResearch.FARUtils;
 
 namespace FerramAerospaceResearch
 {
@@ -83,7 +84,7 @@ namespace FerramAerospaceResearch
             }
             catch (Exception e)
             {
-                Debug.Log("[FAR][FARWIND] Exception! " + e.Message + e.StackTrace);
+                FARLogger.Info("[FARWIND] Exception! " + e.Message + e.StackTrace);
                 return Vector3.zero;
             }
         }
@@ -97,12 +98,12 @@ namespace FerramAerospaceResearch
         {
             if (newFunction == null)
             {
-                Debug.Log("[FAR][FARWind] Attempted to set a null wind function, using ZeroWind instead.");
+                FARLogger.Info("[FARWind] Attempted to set a null wind function, using ZeroWind instead.");
                 FARWind.func = ZeroWind;
             }
             else
             {
-                Debug.Log("[FAR][FARWind] Setting wind function to " + newFunction.Method.Name);
+                FARLogger.Info("[FARWind] Setting wind function to " + newFunction.Method.Name);
                 FARWind.func = newFunction;
             }
         }

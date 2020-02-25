@@ -39,8 +39,8 @@ namespace ferram4
             public bool displayInLegend;
             private double[] rawDataX = new double[1];
             private double[] rawDataY = new double[1];
-            private int[] pixelDataX = new int[1];
-            private int[] pixelDataY = new int[1];
+            private double[] pixelDataX = new double[1];
+            private double[] pixelDataY = new double[1];
             private Vector4d bounds;
             public int lineThickness;
             public Color lineColor = new Color();
@@ -67,26 +67,8 @@ namespace ferram4
             public void InputData(double[] xValues, double[] yValues)
             {
                 int elements = xValues.Length;
-                rawDataX = new double[elements];
-                rawDataY = new double[elements];
-
-                for (int i = 0; i < elements; i++)
-                {
-                    if (double.IsNaN(xValues[i]))
-                    {
-                        xValues[i] = 0;
-                        MonoBehaviour.print("Warning: NaN in xValues array; value set to zero");
-                    }
-                    if (double.IsNaN(yValues[i]))
-                    {
-                        yValues[i] = 0;
-                        MonoBehaviour.print("Warning: NaN in yValues array; value set to zero");
-                    }
-                }
-//                MonoBehaviour.print("Raw Data Arrays Initialized...");
-
-                rawDataX = xValues;
-                rawDataY = yValues;
+                rawDataX = xValues.replaceNaNs(0, "xValues");
+                rawDataY = yValues.replaceNaNs(0, "yValues");
                 ConvertRawToPixels(false);
             }
             #endregion
@@ -95,31 +77,10 @@ namespace ferram4
 
             private void ConvertRawToPixels(bool update = true)
             {
-                pixelDataX = new int[rawDataX.Length];
-                pixelDataY = new int[rawDataY.Length];
-
                 double xScaling = lineDisplay.width / (bounds.y - bounds.x);
                 double yScaling = lineDisplay.height / (bounds.w - bounds.z);
-                double tmpx, tmpy;
-
-                for(int i = 0; i < rawDataX.Length; i++)
-                {
-                    tmpx = rawDataX[i] * horizontalScaling;
-                    tmpy = rawDataY[i] * verticalScaling;
-
-                    tmpx -= bounds.x;
-                    tmpx *= xScaling;
-
-                    tmpy -= bounds.z;
-                    tmpy *= yScaling;
-
-                    tmpx = Math.Round(tmpx);
-                    tmpy = Math.Round(tmpy);
-
-//                    MonoBehaviour.print("x: " + tmpx.ToString() + " y: " + tmpy.ToString());
-                    pixelDataX[i] = (int)tmpx;
-                    pixelDataY[i] = (int)tmpy;
-                }
+                pixelDataX = rawDataX.toPixelsF(bounds.x, horizontalScaling, xScaling);
+                pixelDataY = rawDataY.toPixelsF(bounds.z, verticalScaling, yScaling);
                 if(update)
                     Update();
             }
@@ -137,77 +98,14 @@ namespace ferram4
             public void Update()
             {
                 ClearLine();
-                int lastx = -1;
-                int lasty = -1;
                 if (lineThickness < 1)
                     lineThickness = 1;
+                int prev = 0;
 
-                for(int k = 0; k < pixelDataX.Length; k++)
+                for(int k = 1; k < pixelDataX.Length; k++)
                 {
-                    int tmpx = pixelDataX[k];
-                    int tmpy = pixelDataY[k];
-                    if (lastx >= 0)
-                    {
-                        int tmpThick = lineThickness - 1;
-                        int xstart = Math.Min(tmpx, lastx);
-                        int xend = Math.Max(tmpx, lastx);
-                        int ystart;
-                        int yend;
-
-                        if (xstart == tmpx)
-                        {
-                            ystart = tmpy;
-                            yend = lasty;
-                        }
-                        else
-                        {
-                            ystart = lasty;
-                            yend = tmpy;
-                        }
-
-                        double m = ((double)yend - (double)ystart) / ((double)xend - (double)xstart);
-                        if (Math.Abs(m) <= 1 && (xstart != xend))
-                        {
-                            for (int i = xstart; i < xend; i++)
-                                for (int j = -tmpThick; j <= tmpThick; j++)
-                                {
-                                    int linear = (int)Math.Round(m * (i - xend) + yend);
-                                    if((i >= 0 && i < lineDisplay.width) && (linear + j >= 0 && linear + j < lineDisplay.height))
-                                        lineDisplay.SetPixel(i, linear + j, lineColor);
-                                }
-                        }
-                        else
-                        {
-                            ystart = Math.Min(tmpy, lasty);
-                            yend = Math.Max(tmpy, lasty);
-
-                            if (ystart == tmpy)
-                            {
-                                xstart = tmpx;
-                                xend = lastx;
-                            }
-                            else
-                            {
-                                xstart = lastx;
-                                xend = tmpx;
-                            }
-
-                            m = 1 / m;
-
-                            if (ystart != yend)
-                            {
-                                for (int i = ystart; i < yend; i++)
-                                    for (int j = -tmpThick; j <= tmpThick; j++)
-                                    {
-                                        int linear = (int)Math.Round(m * (i - yend) + xend);
-                                        if ((linear + j >= 0 && linear + j < lineDisplay.width) && (i >= 0 && i < lineDisplay.height))
-                                            lineDisplay.SetPixel(linear + j, i, lineColor);
-                                    }
-                            }
-                        }
-                    }
-                    lastx = tmpx;
-                    lasty = tmpy;
+                    lineDisplay.DrawLineAAF(pixelDataX[prev], pixelDataY[prev], pixelDataX[k], pixelDataY[k], lineColor, lineThickness);
+                    prev = k;
                 }
                 lineDisplay.Apply();
                 UpdateLineLegend();
@@ -230,9 +128,7 @@ namespace ferram4
 
             private void ClearLine()
             {
-                for (int i = 0; i < lineDisplay.width; i++)
-                    for (int j = 0; j < lineDisplay.height; j++)
-                        lineDisplay.SetPixel(i, j, new Color(0, 0, 0, 0));
+                lineDisplay.Clear(ferramDrawingExtensions.EmptyColor);
                 lineDisplay.Apply();
             }
 
@@ -357,12 +253,12 @@ namespace ferram4
             if (pixelWidth <= 1)
             {
                 pixelWidth = 5;
-                Debug.Log("[FAR] Warning! Grid width scale too fine for scaling; picking safe alternative");
+                Debug.Log("[FAR] [ferramGraph] Warning! Grid width scale too fine for scaling; picking safe alternative");
             }
             if (pixelHeight <= 1)
             {
                 pixelHeight = 5;
-                Debug.Log("[FAR] Warning! Grid height scale too fine for scaling; picking safe alternative");
+                Debug.Log("[FAR] [ferramGraph] Warning! Grid height scale too fine for scaling; picking safe alternative");
             }
 
             SetGridScaleUsingPixels(pixelWidth, pixelHeight);
@@ -373,7 +269,7 @@ namespace ferram4
         {
             if (!allLines.ContainsKey(lineName))
             {
-                MonoBehaviour.print("[FAR] Error: No line with that name exists");
+                MonoBehaviour.print("[FAR] [ferramGraph] Error: No line with that name exists");
                 return;
             }
             ferramGraphLine line;
@@ -388,7 +284,7 @@ namespace ferram4
         {
             if (!allLines.ContainsKey(lineName))
             {
-                MonoBehaviour.print("Error: No line with that name exists");
+                MonoBehaviour.print("[FAR] [ferramGraph] Error: No line with that name exists");
                 return;
             }
             ferramGraphLine line;
@@ -441,7 +337,7 @@ namespace ferram4
         {
             if (allLines.ContainsKey(lineName))
             {
-                MonoBehaviour.print("Error: A Line with that name already exists");
+                MonoBehaviour.print("[FAR] [ferramGraph] Error: A Line with that name already exists");
                 return;
             }
             ferramGraphLine newLine = new ferramGraphLine((int)displayRect.width, (int)displayRect.height);
@@ -478,12 +374,12 @@ namespace ferram4
         {
             if (allLines.ContainsKey(lineName))
             {
-                MonoBehaviour.print("Error: A Line with that name already exists");
+                MonoBehaviour.print("[FAR] [ferramGraph] Error: A Line with that name already exists");
                 return;
             }
             if (xValues.Length != yValues.Length)
             {
-                MonoBehaviour.print("Error: X and Y value arrays are different lengths");
+                MonoBehaviour.print("[FAR] [ferramGraph] Error: X and Y value arrays are different lengths");
                 return;
             }
 
@@ -503,7 +399,7 @@ namespace ferram4
         {
             if (!allLines.ContainsKey(lineName))
             {
-                MonoBehaviour.print("Error: No line with that name exists");
+                MonoBehaviour.print("[FAR] [ferramGraph] Error: No line with that name exists");
                 return;
             }
 
@@ -533,7 +429,7 @@ namespace ferram4
         {
             if (xValues.Length != yValues.Length)
             {
-                MonoBehaviour.print("Error: X and Y value arrays are different lengths");
+                MonoBehaviour.print("[FAR] [ferramGraph] Error: X and Y value arrays are different lengths");
                 return;
             }
 
@@ -549,7 +445,7 @@ namespace ferram4
                 Update();
             }
             else
-                MonoBehaviour.print("Error: No line with this name exists");
+                MonoBehaviour.print("[FAR] [ferramGraph] Error: No line with this name exists");
 
         }
 

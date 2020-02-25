@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.5 "Lighthill"
+Ferram Aerospace Research v0.15.9.6 "Lin"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -48,6 +48,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using FerramAerospaceResearch.FARPartGeometry;
+using FerramAerospaceResearch.FARUtils;
 
 namespace FerramAerospaceResearch.FARAeroComponents
 {
@@ -442,7 +443,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
                 center.AddTorque(torqueVector);
             }
             else
-                Debug.LogError("[FAR] NaN Prediction Section Error: Inputs: AtmDen: " + atmDensity + " Mach: " + machNumber + " Re: " + reynoldsPerUnitLength + " Kn: " + pseudoKnudsenNumber + " skin: " + skinFrictionDrag + " vel: " + vel);
+                FARLogger.Error("NaN Prediction Section Error: Inputs: AtmDen: " + atmDensity + " Mach: " + machNumber + " Re: " + reynoldsPerUnitLength + " Kn: " + pseudoKnudsenNumber + " skin: " + skinFrictionDrag + " vel: " + vel);
         }
 
         public void FlightCalculateAeroForces(float atmDensity, float machNumber, float reynoldsPerUnitLength, float pseudoKnudsenNumber, float skinFrictionDrag)

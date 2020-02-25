@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.5 "Lighthill"
+Ferram Aerospace Research v0.15.9.6 "Lin"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -47,6 +47,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using FerramAerospaceResearch.FARUtils;
 
 namespace FerramAerospaceResearch.FARPartGeometry.GeometryModification
 {
@@ -60,25 +61,15 @@ namespace FerramAerospaceResearch.FARPartGeometry.GeometryModification
         {
             this.engineFairing = engineFairing;
             this.geoModule = geoModule;
-            try
-            {
+            if (ObjectsNotNull())
                 fairingVisible = engineFairing.jettisonTransform.gameObject.activeSelf && !engineFairing.isJettisoned;
-            }
-            catch (NullReferenceException)
-            {
-                Debug.Log("[FAR] NullReferenceException in StockJettisonTransformGeoUpdater(" + engineFairing + ", " + geoModule + "), setting fairing visibility to false");
+            else
                 fairingVisible = false;
-            }
         }
 
         public void EditorGeometryUpdate()
         {
-            Transform t = engineFairing.jettisonTransform;
-            if(t == null)
-                return;
-
-            GameObject o = t.gameObject;
-            if(o != null)
+            if (ObjectsNotNull())
                 if (fairingVisible != engineFairing.jettisonTransform.gameObject.activeSelf)
                 {
                     geoModule.RebuildAllMeshData();
@@ -88,17 +79,25 @@ namespace FerramAerospaceResearch.FARPartGeometry.GeometryModification
 
         public void FlightGeometryUpdate()
         {
-            Transform t = engineFairing.jettisonTransform;
-            if (t == null)
-                return;
-
-            GameObject o = t.gameObject;
-            if (o != null)
+            if (ObjectsNotNull())
                 if (fairingVisible != engineFairing.jettisonTransform.gameObject.activeSelf || fairingVisible != !engineFairing.isJettisoned)
                 {
                     geoModule.RebuildAllMeshData();
                     fairingVisible = !fairingVisible;
                 }
+        }
+
+        private bool ObjectsNotNull()
+        {
+            Transform t = engineFairing.jettisonTransform;
+            if (t == null)
+                return false;
+
+            GameObject o = t.gameObject;
+            if (o == null)
+                return false;
+
+            return true;
         }
 
     }

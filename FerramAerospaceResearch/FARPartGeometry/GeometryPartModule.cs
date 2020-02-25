@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.5 "Lighthill"
+Ferram Aerospace Research v0.15.9.6 "Lin"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -49,6 +49,7 @@ using System.Threading;
 using UnityEngine;
 using KSP;
 using KSP.UI.Screens;
+using FerramAerospaceResearch.FARUtils;
 using FerramAerospaceResearch.FARPartGeometry.GeometryModification;
 
 namespace FerramAerospaceResearch.FARPartGeometry
@@ -180,7 +181,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
             }
             if (animStates != null && animStates.Count > 0)
                 CheckAnimations();
-            //Debug.Log("[FAR] Geo PM: " + vessel.CoM + " " + Planetarium.GetUniversalTime());
+            //FARLogger.Info("Geo PM: " + vessel.CoM + " " + Planetarium.GetUniversalTime());
         }
 
         bool ReadyToBuildMesh()
@@ -272,7 +273,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
                 overallBounds.extents.x + overallBounds.extents.y + overallBounds.extents.z;
             if (float.IsNaN(tmpTestBounds) || float.IsInfinity(tmpTestBounds))
             {
-                Debug.Log("[FAR] Overall bounds error in " + part.partInfo.title + " " + meshDataList.Count + " meshes");
+                FARLogger.Info("Overall bounds error in " + part.partInfo.title + " " + meshDataList.Count + " meshes");
                 _valid = false;
             }
             else
@@ -520,7 +521,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
                     //}
                     if (Math.Abs(prevNormTime - state.time) > 10E-5)       //if the anim is not playing, but it was, also send the event to be sure that we closed
                     {
-                        //Debug.Log("[FAR] " + state.time);
+                        //FARLogger.Info("" + state.time);
                         animStateTime[i] = state.time;
                         updateShape = true;
                     }
@@ -581,7 +582,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
                     }
                     else
                     {
-                        Debug.Log("[FAR] A mesh on " + part.partInfo.title + " did not exist and was removed");
+                        FARLogger.Info("A mesh on " + part.partInfo.title + " did not exist and was removed");
                         meshDataList.RemoveAt(i);
                         --i;
                         lock (this)
@@ -697,7 +698,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
 
             if (part.Modules.Contains<KerbalEVA>() || part.Modules.Contains<FlagSite>())
             {
-                Debug.Log("[FAR] Adding vox box to Kerbal / Flag");
+                FARLogger.Info("Adding vox box to Kerbal / Flag");
                 meshList.Add(CreateBoxMeshForKerbalEVA());
                 validTransformList.Add(part.partTransform);
                 meshTransforms = validTransformList;

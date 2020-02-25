@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.5 "Lighthill"
+Ferram Aerospace Research v0.15.9.6 "Lin"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -46,6 +46,7 @@ using System;
 using UnityEngine;
 using FerramAerospaceResearch.FARGUI.FARFlightGUI;
 using FerramAerospaceResearch.FARAeroComponents;
+using FerramAerospaceResearch.FARUtils;
 
 namespace FerramAerospaceResearch
 {
@@ -62,6 +63,17 @@ namespace FerramAerospaceResearch
             }
         }
 
+        private static FARVersion version;
+
+        public static FARVersion Version
+        {
+            get
+            {
+                if (version == null)
+                    version = new FARVersion();
+                return version;
+            }
+        }
 
 
         #region CurrentFlightInfo
@@ -318,7 +330,7 @@ namespace FerramAerospaceResearch
             aeroForce = aeroTorque = Vector3.zero;
             if (vessel == null)
             {
-                Debug.LogError("[FAR] FAR API Error: attempted to simulate aerodynamics of null vessel");
+                FARLogger.Error("API Error: attempted to simulate aerodynamics of null vessel");
                 return;
             }
 
@@ -326,7 +338,7 @@ namespace FerramAerospaceResearch
 
             if (vesselAero == null)
             {
-                Debug.LogError("[FAR] FAR API Error: vessel does not have FARVesselAero aerocomponent for simulation");
+                FARLogger.Error("API Error: vessel does not have FARVesselAero aerocomponent for simulation");
                 return;
             }
 

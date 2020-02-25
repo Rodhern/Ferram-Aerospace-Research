@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using FerramAerospaceResearch.FARUtils;
 
 /* RealChuteLite is the work of Christophe Savard (stupid_chris), and is licensed the same way than the rest of FAR is.
  * If you have any questions about this code, or want to report something, don't annoy ferram about it, ask me
@@ -13,7 +14,7 @@ namespace FerramAerospaceResearch.RealChuteLite
         #region Initialization
         private void Start()
         {
-            Debug.Log("[FAR] Initiating RealChuteLite Chute Property Calculation");
+            FARLogger.Info("Initiating RealChuteLite Chute Property Calculation");
             foreach (AvailablePart part in PartLoader.Instance.loadedParts)
             {
                 Part prefab = part.partPrefab;
@@ -23,7 +24,7 @@ namespace FerramAerospaceResearch.RealChuteLite
                     RealChuteFAR module = prefab.Modules.GetModule<RealChuteFAR>();
                     DragCubeSystem.Instance.LoadDragCubes(prefab);
                     DragCube semi = prefab.DragCubes.Cubes.Find(c => c.Name == "SEMIDEPLOYED"), deployed = prefab.DragCubes.Cubes.Find(c => c.Name == "DEPLOYED");
-                    if (semi == null || deployed == null) { Debug.Log("[FAR] " + part.title + " cannot find drag cube for RealChuteLite"); }
+                    if (semi == null || deployed == null) { FARLogger.Info("" + part.title + " cannot find drag cube for RealChuteLite"); }
                     module.preDeployedDiameter = GetApparentDiameter(semi);
                     module.deployedDiameter = GetApparentDiameter(deployed);
                     part.moduleInfos.Find(m => m.moduleName == "RealChute").info = module.GetInfo();

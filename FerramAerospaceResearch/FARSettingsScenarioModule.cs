@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.5 "Lighthill"
+Ferram Aerospace Research v0.15.9.6 "Lin"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -50,6 +50,7 @@ using KSP;
 using FerramAerospaceResearch.FARGUI;
 using FerramAerospaceResearch.FARGUI.FAREditorGUI;
 using FerramAerospaceResearch.FARPartGeometry;
+using FerramAerospaceResearch.FARUtils;
 using ferram4;
 
 namespace FerramAerospaceResearch
@@ -106,7 +107,7 @@ namespace FerramAerospaceResearch
             if (instance == null)
             {
                 instance = new FARSettingsScenarioModule();
-                Debug.Log("[FAR] Creating new setting module for tutorial/scenario");
+                FARLogger.Info("Creating new setting module for tutorial/scenario");
                 instance.OnLoad(new ConfigNode());
                 instance.Start();
             }
@@ -130,11 +131,11 @@ namespace FerramAerospaceResearch
             //if (newGame)
             //    PopupDialog.SpawnPopupDialog("Ferram Aerospace Research", "Welcome to KSP with FAR!\n\r\n\rThings will be much harder from here on out; the FAR button in the top-right corner will bring you to difficulty settings if you ever decide to change them.  Have fun!", "OK", false, HighLogic.Skin);
 
-            Debug.Log("[FAR] FAR Vehicle Voxel Setup started");
+            FARLogger.Info("Vehicle Voxel Setup started");
             FerramAerospaceResearch.FARAeroComponents.FARAeroSection.GenerateCrossFlowDragCurve();
             VehicleVoxel.VoxelSetup();
             PhysicsGlobals.DragCubeMultiplier = 0;
-            Debug.Log("[FAR] FAR Vehicle Voxel Setup complete");
+            FARLogger.Info("Vehicle Voxel Setup complete");
 
             //GameEvents.onGameStateSave.Add(OnSave);
             newGame = false;
@@ -148,7 +149,7 @@ namespace FerramAerospaceResearch
 
         public override void OnSave(ConfigNode node)
         {
-            Debug.Log("[FAR] saved");
+            FARLogger.Info("saved");
             node.AddValue("newGame", newGame);
             node.AddValue("fractionTransonicDrag", settings.fractionTransonicDrag);
             node.AddValue("gaussianVehicleLengthFractionForSmoothing", settings.gaussianVehicleLengthFractionForSmoothing);
@@ -162,7 +163,7 @@ namespace FerramAerospaceResearch
 
             FARGUI.FARFlightGUI.FlightGUI.SaveActiveData();
             ConfigNode flightGUINode = new ConfigNode("FlightGUISettings");
-            Debug.Log("[FAR] Saving FAR Data");
+            FARLogger.Info("Saving FAR Data");
             for (int i = 0; i < flightGUISettings.Count; i++)
             {
                 flightGUINode.AddNode(flightGUISettings[i]);
@@ -220,7 +221,7 @@ namespace FerramAerospaceResearch
             currentIndex = index;
 
 
-            Debug.Log("[FAR] Loading FAR Data");
+            FARLogger.Info("Loading FAR Data");
             flightGUISettings = new List<ConfigNode>();
             if(node.HasNode("FlightGUISettings"))
             {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using KSPAssets;
 using KSPAssets.Loaders;
+using FerramAerospaceResearch.FARUtils;
 
 namespace FerramAerospaceResearch
 {
@@ -16,16 +17,16 @@ namespace FerramAerospaceResearch
         {
             materialDict = new Dictionary<string, Material>();
 
-            /* Debug.Log("[FAR] Asset bundles");
-            Debug.Log("[FAR] " + AssetLoader.BundleDefinitions.Count);
+            /* FARLogger.Info("Asset bundles");
+            FARLogger.Info("" + AssetLoader.BundleDefinitions.Count);
             foreach (BundleDefinition b in AssetLoader.BundleDefinitions)
             {
-                Debug.Log("[FAR] " + b.name + " " + b.createdTime + " " + b.path + " " + b.info + " " + b.urlName);
+                FARLogger.Info("" + b.name + " " + b.createdTime + " " + b.path + " " + b.info + " " + b.urlName);
             }
-            Debug.Log("[FAR] " + AssetLoader.AssetDefinitions.Count);
+            FARLogger.Info("" + AssetLoader.AssetDefinitions.Count);
             foreach (AssetDefinition a in AssetLoader.AssetDefinitions)
             {
-                Debug.Log("[FAR] " + a.name + " " + a.type + " " + a.path);
+                FARLogger.Info("" + a.name + " " + a.type + " " + a.path);
             }*/
 
             // AssetLoader.LoadAssets(LoadAssets,
@@ -45,7 +46,7 @@ namespace FerramAerospaceResearch
                 Type oType = o.GetType();
                 if (oType == typeof(Material))
                 {
-                    Debug.Log("[FAR] Adding material " + loader.definitions[i].name + " to dictionary");
+                    FARLogger.Info("Adding material " + loader.definitions[i].name + " to dictionary");
                     materialDict.Add(loader.definitions[i].name, o as Material);
                 }
             }

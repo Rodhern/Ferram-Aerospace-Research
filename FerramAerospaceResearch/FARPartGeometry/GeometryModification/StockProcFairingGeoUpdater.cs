@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.5 "Lighthill"
+Ferram Aerospace Research v0.15.9.6 "Lin"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -48,6 +48,7 @@ using System.Reflection;
 using UnityEngine;
 using KSP;
 using ProceduralFairings;
+using FerramAerospaceResearch.FARUtils;
 
 namespace FerramAerospaceResearch.FARPartGeometry.GeometryModification
 {
@@ -67,7 +68,7 @@ namespace FerramAerospaceResearch.FARPartGeometry.GeometryModification
 
             if (validParts == null)
             {
-                Debug.Log("[FAR] Fairing event setup");
+                FARLogger.Info("Fairing event setup");
                 validParts = new Dictionary<Part, GeometryPartModule>();
                 GameEvents.onFairingsDeployed.Add(FairingDeployGeometryUpdate);
             }
@@ -135,7 +136,7 @@ namespace FerramAerospaceResearch.FARPartGeometry.GeometryModification
         {
             if (ready == false)
             {
-                Debug.Log("[FAR] Update fairing event");
+                FARLogger.Info("Update fairing event");
                 GameEvents.onFairingsDeployed.Add(FairingDeployGeometryUpdate);
                 /*FieldInfo[] fields = fairing.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
                 bool deployBool = false, breakBool = false;
@@ -149,9 +150,9 @@ namespace FerramAerospaceResearch.FARPartGeometry.GeometryModification
                 breakBool = true;
 
                 if (!deployBool)
-                    Debug.LogError("[FAR] FAR could not find Stock Procedural Fairing deploy event");
+                    FARLogger.Error("Could not find Stock Procedural Fairing deploy event");
                 if (!breakBool)
-                    Debug.LogError("[FAR] FAR could not find Stock Procedural Fairing break event");
+                    FARLogger.Error("Could not find Stock Procedural Fairing break event");
             }
 
         }*/

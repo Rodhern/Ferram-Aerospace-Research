@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.5 "Lighthill"
+Ferram Aerospace Research v0.15.9.6 "Lin"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -103,7 +103,7 @@ namespace FerramAerospaceResearch.FARThreading
 
                         lock (sweepPlane)           //Used as generic locker in solidification; due to careful design, locks are not needed for reading and writing to indices, so this slows nothing
                 {
-                    Debug.Log("[FAR] Entered 1 " + threadInd);
+                    FARLogger.Info("Entered 1 " + threadInd);
                     synced = false;         //first, identify that we are not synced
                     threadsQueued--;          //Decrement items queued, since we are completed
 
@@ -116,10 +116,10 @@ namespace FerramAerospaceResearch.FARThreading
                     {                                //If all items are completed, then the 0th thread continues
                         threadsQueued = 4;               //It then increments itemsQueued to the number of total threads
                         synced = true;                  //And indicates that we are synced
-                        Debug.Log("[FAR] bleh");
+                        FARLogger.Info("bleh");
                     }
                     Monitor.PulseAll(sweepPlane);   //And pulses all the others so that work may continue
-                    Debug.Log("[FAR] Leaving 1 " + threadInd);
+                    FARLogger.Info("Leaving 1 " + threadInd);
                 }*/
 
     }

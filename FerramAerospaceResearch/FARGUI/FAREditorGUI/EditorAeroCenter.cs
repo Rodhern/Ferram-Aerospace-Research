@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.5 "Lighthill"
+Ferram Aerospace Research v0.15.9.6 "Lin"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -170,7 +170,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
 
             vesselRootLocalAeroCenter = deltaMomentPerp.magnitude / deltaForcePerpMag * vel_base * Math.Sign(Vector3.Dot(Vector3.Cross(deltaForce, deltaMoment), vel_base));
 
-            //Debug.Log("[FAR] " + dist + " " + deltaMomentPerp.magnitude + " " + deltaForcePerpMag);
+            //FARLogger.Info("" + dist + " " + deltaMomentPerp.magnitude + " " + deltaForcePerpMag);
             //vesselRootLocalAeroCenter += avgForcePos;
             //avgForcePos = rootPartTrans.worldToLocalMatrix.MultiplyPoint3x4(avgForcePos);
             //vesselRootLocalAeroCenter += Vector3.ProjectOnPlane(avgForcePos, Vector3.up);

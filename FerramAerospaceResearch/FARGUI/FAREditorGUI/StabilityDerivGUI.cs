@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.5 "Lighthill"
+Ferram Aerospace Research v0.15.9.6 "Lin"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -81,7 +81,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
         public void ArrowAnim(ArrowPointer velArrow)
         {
             velArrow.Direction = -aoAVec;
-            //Debug.Log("[FAR] " + velArrow.Direction);
+            //FARLogger.Info("" + velArrow.Direction);
         }
 
         void SetAngleVectors(double aoA)

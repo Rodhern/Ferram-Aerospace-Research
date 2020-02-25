@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.5 "Lighthill"
+Ferram Aerospace Research v0.15.9.6 "Lin"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -47,6 +47,7 @@ using System.Collections.Generic;
 using KSPAssets;
 using KSPAssets.Loaders;
 using UnityEngine;
+using FerramAerospaceResearch.FARUtils;
 
 namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
 {
@@ -104,7 +105,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
                 if (!FARAssets.materialDict.TryGetValue("FARGraphMaterial", out lineMaterial))
                 {
                     //TODO: definitely replace this with a proper shader when we can
-                    Debug.Log("[FAR] Could not load cross-section shader; using fallback shader");
+                    FARLogger.Warning("Could not load cross-section shader; using fallback shader");
                     lineMaterial = new Material(Shader.Find("Sprites/Default"));
                 }
 
@@ -114,8 +115,8 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
                 _rendererMaterial.renderQueue = 4500;
             }
 
-            // Debug.Log("[FAR] Creating renderers with material " + _rendererMaterial);
-            // Debug.Log("[FAR] Area color: " + _crossSectionColor + ", Deriv: " + _derivColor + ", Coeff: " + Color.cyan + ", Marking: " + _axisColor);
+            FARLogger.Debug("Creating renderers with material " + _rendererMaterial);
+            FARLogger.Debug("Area color: " + _crossSectionColor + ", Deriv: " + _derivColor + ", Coeff: " + Color.cyan + ", Marking: " + _axisColor);
             _areaRenderer = CreateNewRenderer(_crossSectionColor, 0.1f, _rendererMaterial);
             _derivRenderer = CreateNewRenderer(_derivColor, 0.1f, _rendererMaterial);
             _coeffRenderer = CreateNewRenderer(Color.cyan, 0.1f, _rendererMaterial);
@@ -165,11 +166,11 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
             renderer.useWorldSpace = false;
             if (material.HasProperty("_Color"))
             {
-                // Debug.Log("[FAR] Setting _Color on " + material + "to " + color);
+                // FARLogger.Info("Setting _Color on " + material + "to " + color);
                 rendererMaterial.SetColor("_Color", color);
             }
             else
-                Debug.LogWarning("[FAR] Material " + material + " has no _Color property");
+                FARLogger.Warning("Material " + material + " has no _Color property");
             renderer.material = rendererMaterial;
             // renderer.startColor = color;
             // renderer.endColor = color;

@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.5 "Lighthill"
+Ferram Aerospace Research v0.15.9.6 "Lin"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -47,6 +47,7 @@ using System.Collections.Generic;
 using KSP.UI.Screens.Flight;
 using KSP.Localization;
 using UnityEngine;
+using FerramAerospaceResearch.FARUtils;
 
 
 namespace FerramAerospaceResearch.FARGUI.FARFlightGUI
@@ -206,7 +207,7 @@ namespace FerramAerospaceResearch.FARGUI.FARFlightGUI
             List<ConfigNode> flightGUISettings = FARSettingsScenarioModule.FlightGUISettings;
             if(flightGUISettings == null)
             {
-                Debug.LogError("[FAR] Could not save Airspeed Settings because settings config list was null");
+                FARLogger.Error("Could not save Airspeed Settings because settings config list was null");
             }
             ConfigNode node = null;
             for(int i = 0; i < flightGUISettings.Count; i++)

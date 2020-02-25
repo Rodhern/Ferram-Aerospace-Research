@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.5 "Lighthill"
+Ferram Aerospace Research v0.15.9.6 "Lin"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -47,6 +47,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using FerramAerospaceResearch.FARThreading;
+using FerramAerospaceResearch.FARUtils;
 
 namespace FerramAerospaceResearch.FARPartGeometry
 {
@@ -144,7 +145,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
                     MAX_CHUNKS_IN_QUEUE = chunksForQueue;
                     MAX_CHUNKS_ALLOWED = (int)Math.Ceiling(1.5 * MAX_CHUNKS_IN_QUEUE);
 
-                    Debug.Log("[FAR] " + MAX_CHUNKS_IN_QUEUE + " " + MAX_CHUNKS_ALLOWED);
+                    FARLogger.Info("" + MAX_CHUNKS_IN_QUEUE + " " + MAX_CHUNKS_ALLOWED);
                     for (int i = 0; i < MAX_CHUNKS_IN_QUEUE; i++)
                         clearedChunks.Push(new VoxelChunk(0, Vector3.zero, 0, 0, 0, null, useHigherResVoxels));
 
@@ -213,7 +214,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
 
             if (double.IsInfinity(volume))     //...if something broke, get out of here
             {
-                Debug.LogError("[FAR] Voxel Volume was infinity; ending voxelization");
+                FARLogger.Error("Voxel Volume was infinity; ending voxelization");
                 return;
             }
             double elementVol = volume / elementCount;
@@ -243,9 +244,9 @@ namespace FerramAerospaceResearch.FARPartGeometry
             yCellLength = yLength * 8;
             zCellLength = zLength * 8;
 
-            //Debug.Log("[FAR] " + elementSize);
-            //Debug.Log("[FAR] " + xLength + " " + yLength + " " + zLength);
-            //Debug.Log("[FAR] " + size);
+            //FARLogger.Info("" + elementSize);
+            //FARLogger.Info("" + xLength + " " + yLength + " " + zLength);
+            //FARLogger.Info("" + size);
 
             Vector3d extents = new Vector3d(); //this will be the distance from the center to the edges of the voxel object
             extents.x = xLength * 4 * elementSize;
@@ -316,7 +317,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
 
             if (double.IsInfinity(volume))     //...if something broke, get out of here
             {
-                Debug.LogError("[FAR] Voxel Volume was infinity; ending voxelization");
+                FARLogger.Error("Voxel Volume was infinity; ending voxelization");
                 return;
             }
             double elementVol = volume / elementCount;
@@ -346,9 +347,9 @@ namespace FerramAerospaceResearch.FARPartGeometry
             yCellLength = yLength * 8;
             zCellLength = zLength * 8;
 
-            //Debug.Log("[FAR] " + elementSize);
-            //Debug.Log("[FAR] " + xLength + " " + yLength + " " + zLength);
-            //Debug.Log("[FAR] " + size);
+            //FARLogger.Info("" + elementSize);
+            //FARLogger.Info("" + xLength + " " + yLength + " " + zLength);
+            //FARLogger.Info("" + size);
 
             Vector3d extents = new Vector3d(); //this will be the distance from the center to the edges of the voxel object
             extents.x = xLength * 4 * elementSize;
@@ -1530,7 +1531,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
                 voxelChunks[iSec, jSec, kSec] = section;
             }
 
-            //Debug.Log("[FAR] " + i.ToString() + ", " + j.ToString() + ", " + k.ToString() + ", " + part.partInfo.title);
+            //FARLogger.Info("" + i.ToString() + ", " + j.ToString() + ", " + k.ToString() + ", " + part.partInfo.title);
 
             section.SetVoxelPointGlobalIndexNoLock(i + j * 8 + k * 64, maxLocationByte);
         }
@@ -1565,7 +1566,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
                 voxelChunks[iSec, jSec, kSec] = section;
             }
 
-            //Debug.Log("[FAR] " + i.ToString() + ", " + j.ToString() + ", " + k.ToString() + ", " + part.partInfo.title);
+            //FARLogger.Info("" + i.ToString() + ", " + j.ToString() + ", " + k.ToString() + ", " + part.partInfo.title);
 
             section.SetVoxelPointPartOnlyGlobalIndexNoLock(i + j * 8 + k * 64, part);
         }
@@ -1600,7 +1601,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
                 voxelChunks[iSec, jSec, kSec] = section;
             }
 
-            //Debug.Log("[FAR] " + i.ToString() + ", " + j.ToString() + ", " + k.ToString() + ", " + part.partInfo.title);
+            //FARLogger.Info("" + i.ToString() + ", " + j.ToString() + ", " + k.ToString() + ", " + part.partInfo.title);
 
             section.SetVoxelPointGlobalIndexNoLock(i + j * 8 + k * 64, part, maxLocationByte);
         }
@@ -1637,7 +1638,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
                 }
             }
 
-            //Debug.Log("[FAR] " + i.ToString() + ", " + j.ToString() + ", " + k.ToString() + ", " + part.partInfo.title);
+            //FARLogger.Info("" + i.ToString() + ", " + j.ToString() + ", " + k.ToString() + ", " + part.partInfo.title);
 
             section.SetVoxelPointGlobalIndex(i + j * 8 + k * 64, part, location, plane);
         }

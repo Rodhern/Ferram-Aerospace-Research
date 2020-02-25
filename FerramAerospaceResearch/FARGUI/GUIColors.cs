@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.5 "Lighthill"
+Ferram Aerospace Research v0.15.9.6 "Lin"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -46,6 +46,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using FerramAerospaceResearch.FARUtils;
 
 namespace FerramAerospaceResearch.FARGUI
 {
@@ -96,7 +97,7 @@ namespace FerramAerospaceResearch.FARGUI
         public void LoadColors()
         {
             colors = new List<Color>();
-            Debug.Log("[FAR] Loading FAR GUI Colors");
+            FARLogger.Info("Loading FAR GUI Colors");
             foreach (ConfigNode node in GameDatabase.Instance.GetConfigNodes("FARGUIColors"))
             {
                 if (node.HasValue("ClColor"))
