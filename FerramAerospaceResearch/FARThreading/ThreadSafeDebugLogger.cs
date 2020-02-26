@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.6 "Lin"
+Ferram Aerospace Research v0.15.9.7 "Lumley"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -44,6 +44,7 @@ Copyright 2017, Michael Ferrara, aka Ferram4
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using FerramAerospaceResearch.FARUtils;
 
@@ -55,16 +56,21 @@ namespace FerramAerospaceResearch.FARThreading
         static ThreadSafeDebugLogger _instance;
         public static ThreadSafeDebugLogger Instance
         {
-            get { return _instance; }
+            get
+            {
+                return _instance;
+            }
         }
 
         List<Exception> _exceptionsThrown;
+        List<string> _infoMessages;
         List<string> _debugMessages;
 
         void Awake()
         {
             _instance = this;
             _exceptionsThrown = new List<Exception>();
+            _infoMessages = new List<string>();
             _debugMessages = new List<string>();
             GameObject.DontDestroyOnLoad(this.gameObject);
         }
@@ -79,7 +85,28 @@ namespace FerramAerospaceResearch.FARThreading
                 _exceptionsThrown.Clear();
             }
 
+            UpdateInfo();
+            UpdateDebug();
+        }
 
+        [Conditional("DEBUG"), Conditional("INFO")]
+        private void UpdateInfo()
+        {
+            if (_infoMessages.Count > 0)
+            {
+                System.Text.StringBuilder sB = new System.Text.StringBuilder();
+                for (int i = 0; i < _infoMessages.Count; i++)
+                    sB.AppendLine(_infoMessages[i]);
+
+                _infoMessages.Clear();
+
+                FARLogger.Info("" + sB.ToString());
+            }
+        }
+
+        [Conditional("DEBUG")]
+        private void UpdateDebug()
+        {
             if (_debugMessages.Count > 0)
             {
                 System.Text.StringBuilder sB = new System.Text.StringBuilder();
@@ -88,12 +115,18 @@ namespace FerramAerospaceResearch.FARThreading
 
                 _debugMessages.Clear();
 
-                FARLogger.Info("" + sB.ToString());
+                FARLogger.Debug("" + sB.ToString());
             }
-
         }
 
+        [Conditional("DEBUG"), Conditional("INFO")]
         public void RegisterMessage(string s)
+        {
+            _infoMessages.Add(s);
+        }
+
+        [Conditional("DEBUG")]
+        public void RegisterDebugMessage(string s)
         {
             _debugMessages.Add(s);
         }

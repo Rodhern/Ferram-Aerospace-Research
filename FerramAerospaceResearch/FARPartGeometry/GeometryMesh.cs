@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.6 "Lin"
+Ferram Aerospace Research v0.15.9.7 "Lumley"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -64,6 +64,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
         public Part part;
         private GeometryPartModule module;
         public bool valid;
+        public bool isSkinned;
 
         public int invertXYZ;
 
@@ -74,10 +75,13 @@ namespace FerramAerospaceResearch.FARPartGeometry
         {
             this.meshLocalVerts = meshData.vertices;
             this.triangles = meshData.triangles;
+            this.isSkinned = meshData.isSkinned;
             Bounds meshBounds = meshData.bounds;
 
             vertices = new Vector3[meshLocalVerts.Length];
-            this.thisToVesselMatrix = worldToVesselMatrix * meshTransform.localToWorldMatrix;
+            this.meshTransform = meshTransform;
+            UpdateLocalToWorldMatrix();
+            this.thisToVesselMatrix = worldToVesselMatrix * meshLocalToWorld;
 
             for (int i = 0; i < vertices.Length; i++)
             {
@@ -94,13 +98,12 @@ namespace FerramAerospaceResearch.FARPartGeometry
                 vertices[i] = vert;
             }
 
-            this.meshTransform = meshTransform;
             this.gameObjectActiveInHierarchy = meshTransform.gameObject.activeInHierarchy;
 
             bounds = TransformBounds(meshBounds, thisToVesselMatrix);
 
-            float tmpTestBounds = bounds.center.x + bounds.center.y + bounds.center.z +
-                bounds.extents.x + bounds.extents.y + bounds.extents.z;
+            float tmpTestBounds = bounds.center.x + bounds.center.y + bounds.center.z
+                + bounds.extents.x + bounds.extents.y + bounds.extents.z;
             if (float.IsNaN(tmpTestBounds) || float.IsInfinity(tmpTestBounds))
             {
                 ThreadSafeDebugLogger.Instance.RegisterMessage("Bounds error in " + module.part.partInfo.title);
@@ -123,8 +126,20 @@ namespace FerramAerospaceResearch.FARPartGeometry
             if (meshTransform == null)
                 return false;
             lock(this)
-                meshLocalToWorld = meshTransform.localToWorldMatrix;
+            UpdateLocalToWorldMatrix();
             return true;
+        }
+
+        private void UpdateLocalToWorldMatrix()
+        {
+            if (!isSkinned)
+            {
+                meshLocalToWorld = meshTransform.localToWorldMatrix;
+            }
+            else
+            {
+                meshLocalToWorld = Matrix4x4.TRS(meshTransform.position, meshTransform.rotation, Vector3.one);
+            }
         }
 
         public void TransformBasis(Matrix4x4 newThisToVesselMatrix)
@@ -145,7 +160,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
 
                 for (int i = 0; i < vertices.Length; i++)
                 {
-                    Vector3 vert = tempMatrix.MultiplyPoint3x4(meshLocalVerts[i]);// = Vector3.zero;
+                    Vector3 vert = tempMatrix.MultiplyPoint3x4(meshLocalVerts[i]); // = Vector3.zero;
 
                     float tmpTestVert = vert.x + vert.y + vert.z;
                     if (float.IsNaN(tmpTestVert) || float.IsInfinity(tmpTestVert))
@@ -175,17 +190,17 @@ namespace FerramAerospaceResearch.FARPartGeometry
 
         public void MultithreadTransformBasis(object newThisToVesselMatrixObj)
         {
-            lock (this)
+            lock(this)
             {
-                this.TransformBasis((Matrix4x4)newThisToVesselMatrixObj);
+                this.TransformBasis((Matrix4x4) newThisToVesselMatrixObj);
             }
         }
 
         private Bounds TransformBounds(Bounds oldBounds, Matrix4x4 matrix)
         {
             Vector3 center, extents;
-            center = oldBounds.center;//matrix.MultiplyPoint3x4(m.bounds.center);
-            extents = oldBounds.extents;//matrix.MultiplyVector(m.bounds.size);
+            center = oldBounds.center; //matrix.MultiplyPoint3x4(m.bounds.center);
+            extents = oldBounds.extents; //matrix.MultiplyVector(m.bounds.size);
 
             Vector3 lower = Vector3.one * float.PositiveInfinity;
             Vector3 upper = Vector3.one * float.NegativeInfinity;

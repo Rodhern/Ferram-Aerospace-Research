@@ -12,10 +12,12 @@ namespace FerramAerospaceResearch
     {
 
         public static Dictionary<string, Material> materialDict;
+        public static Dictionary<string, Shader> shaderDict;
 
         void Start()
         {
             materialDict = new Dictionary<string, Material>();
+            shaderDict = new Dictionary<string, Shader>();
 
             /* FARLogger.Info("Asset bundles");
             FARLogger.Info("" + AssetLoader.BundleDefinitions.Count);
@@ -32,12 +34,14 @@ namespace FerramAerospaceResearch
             // AssetLoader.LoadAssets(LoadAssets,
             // AssetLoader.GetAssetDefinitionWithName("FerramAerospaceResearch/Shaders/farshaders",
             // "FARCrossSectionGraph"));
-            AssetLoader.LoadAssets(LoadAssets, AssetLoader.GetAssetDefinitionWithName("FerramAerospaceResearch/Assets/farassets", "FARGraphMaterial"));
+            AssetLoader.LoadAssets(LoadAssets, AssetLoader.GetAssetDefinitionsWithType("FerramAerospaceResearch/Assets/farassets", typeof(Material)));
+            AssetLoader.LoadAssets(LoadAssets, AssetLoader.GetAssetDefinitionsWithType("FerramAerospaceResearch/Assets/farassets", typeof(Shader)));
+            FARLogger.Info("Finished loading FAR Assets.");
         }
 
         void LoadAssets(AssetLoader.Loader loader)
         {
-            for (int i = 0; i < loader.definitions.Length; i++ )
+            for (int i = 0; i < loader.definitions.Length; i++)
             {
                 UnityEngine.Object o = loader.objects[i];
                 if (o == null)
@@ -48,6 +52,11 @@ namespace FerramAerospaceResearch
                 {
                     FARLogger.Info("Adding material " + loader.definitions[i].name + " to dictionary");
                     materialDict.Add(loader.definitions[i].name, o as Material);
+                }
+                else if (oType == typeof(Shader))
+                {
+                    FARLogger.Info("Adding shader " + loader.definitions[i].name + " to dictionary");
+                    shaderDict.Add(loader.definitions[i].name, o as Shader);
                 }
             }
         }

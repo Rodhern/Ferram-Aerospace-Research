@@ -1,5 +1,5 @@
-﻿/*
-Ferram Aerospace Research v0.15.9.6 "Lin"
+/*
+Ferram Aerospace Research v0.15.9.7 "Lumley"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -223,7 +223,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
             return voxelPoints[index];
         }
 
-        public void VisualizeVoxels(Matrix4x4 vesselLocalToWorldMatrix)
+        public void VisualizeVoxels(Matrix4x4 vesselLocalToWorldMatrix, DebugVisualVoxelMeshController voxelMesh)
         {
             ClearVisualVoxels();
             visualVoxels = new DebugVisualVoxel[8, 8, 8];
@@ -234,7 +234,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
                         DebugVisualVoxel vx;
                         //if(voxelPoints[i,j,k] != null)
                         PartSizePair pair = voxelPoints[i + 8 * j + 64 * k];
-                        if ((object)pair.part != null)
+                        if ((object) pair.part != null)
                         {
                             double elementSize = pair.GetSize();
                             if (elementSize > 1)
@@ -242,6 +242,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
 
                             elementSize *= _size * 0.5f;
                             vx = new DebugVisualVoxel(vesselLocalToWorldMatrix.MultiplyPoint3x4(lowerCorner + new Vector3d(i, j, k) * _size), elementSize);
+                            voxelMesh.DebugVoxels.Add(vx);
                             visualVoxels[i, j, k] = vx;
                         }
                     }
@@ -254,10 +255,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
                     for (int j = 0; j < 8; j++)
                         for (int k = 0; k < 8; k++)
                         {
-                            DebugVisualVoxel vx = visualVoxels[i, j, k];
-                            if (vx != null)
-                                GameObject.Destroy(vx.gameObject);
-                            vx = null;
+                            visualVoxels[i, j, k] = null;
                         }
         }
 

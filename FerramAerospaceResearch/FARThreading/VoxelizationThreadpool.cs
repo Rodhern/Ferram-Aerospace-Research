@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.6 "Lin"
+Ferram Aerospace Research v0.15.9.7 "Lumley"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -46,6 +46,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using FerramAerospaceResearch.FARUtils;
 
 namespace FerramAerospaceResearch.FARThreading
 {
@@ -54,8 +55,7 @@ namespace FerramAerospaceResearch.FARThreading
     {
         // Explicit static constructor to tell C# compiler not to mark type as beforefieldinit
         static VoxelizationThreadpool()
-        {
-        }
+        { }
 
         public static readonly VoxelizationThreadpool Instance = new VoxelizationThreadpool();
 
@@ -79,6 +79,16 @@ namespace FerramAerospaceResearch.FARThreading
 
         public static bool RunInMainThread = false;
 
+        private Thread _mainThread = null;
+
+        public bool inMainThread
+        {
+            get
+            {
+                return _mainThread == Thread.CurrentThread;
+            }
+        }
+
         private VoxelizationThreadpool()
         {
             _threads = new Thread[THREAD_COUNT];
@@ -90,14 +100,22 @@ namespace FerramAerospaceResearch.FARThreading
                 //_threads[i].IsBackground = true;
                 _threads[i].Start();
             }
+            // make sure we get main thread while in main thread, ctor is not guaranteed to be run in main thread
+            queuedMainThreadTasks.Enqueue(new Task(SetupMainThread));
         }
 
         ~VoxelizationThreadpool()
         {
             for (int i = 0; i < _threads.Length; i++)
             {
-                QueueVoxelization(null);        //this will pass a null action to each thread, ending it
+                QueueVoxelization(null); //this will pass a null action to each thread, ending it
             }
+        }
+
+        void SetupMainThread()
+        {
+            _mainThread = Thread.CurrentThread;
+            FARLogger.Debug("Main thread: " + _mainThread.Name);
         }
 
         void ExecuteQueuedVoxelization()
@@ -105,7 +123,7 @@ namespace FerramAerospaceResearch.FARThreading
             while (true)
             {
                 Action task;
-                lock (this)
+                lock(this)
                 {
                     while (queuedVoxelizations.Count == 0)
                     {
@@ -123,7 +141,7 @@ namespace FerramAerospaceResearch.FARThreading
 
         public void QueueVoxelization(Action voxelAction)
         {
-            lock (this)
+            lock(this)
             {
                 queuedVoxelizations.Enqueue(voxelAction);
                 Monitor.Pulse(this);
@@ -132,12 +150,16 @@ namespace FerramAerospaceResearch.FARThreading
 
         public void RunOnMainThread(Action action)
         {
+            if (inMainThread)
+            {
+                action();
+            }
             var task = new Task(action);
-            lock (queuedMainThreadTasks)
+            lock(queuedMainThreadTasks)
             {
                 queuedMainThreadTasks.Enqueue(task);
             }
-            lock (task)
+            lock(task)
             {
                 while (!task.Executed)
                 {
@@ -151,14 +173,14 @@ namespace FerramAerospaceResearch.FARThreading
             while (true)
             {
                 Task task;
-                lock (queuedMainThreadTasks)
+                lock(queuedMainThreadTasks)
                 {
                     if (queuedMainThreadTasks.Count == 0)
                         break;
                     task = queuedMainThreadTasks.Dequeue();
                 }
                 task.Action();
-                lock (task)
+                lock(task)
                 {
                     task.Executed = true;
                     Monitor.Pulse(task);

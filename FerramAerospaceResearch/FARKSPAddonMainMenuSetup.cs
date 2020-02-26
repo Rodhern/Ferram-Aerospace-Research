@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.6 "Lin"
+Ferram Aerospace Research v0.15.9.7 "Lumley"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -48,6 +48,7 @@ using System.Threading;
 using UnityEngine;
 using FerramAerospaceResearch.FARAeroComponents;
 using FerramAerospaceResearch.FARGUI;
+using FerramAerospaceResearch.FARUtils;
 using ferram4;
 
 namespace FerramAerospaceResearch
@@ -59,6 +60,8 @@ namespace FerramAerospaceResearch
         {
             FARSettingsScenarioModule.MainMenuBuildDefaultScenarioModule();
             this.enabled = false;
+
+            FARLogger.Info(string.Format("Unity engine version '{0}'.", Application.unityVersion));
         }
     }
 }

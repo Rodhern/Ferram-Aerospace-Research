@@ -1,5 +1,5 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.6 "Lin"
+Ferram Aerospace Research v0.15.9.7 "Lumley"
 =========================
 Aerodynamics model for Kerbal Space Program
 
@@ -682,7 +682,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
                 {
                     m = new Mesh();
                     smr.BakeMesh(m);
-                    MeshData md = new MeshData(m.vertices, m.triangles, m.bounds);
+                    MeshData md = new MeshData(m.vertices, m.triangles, m.bounds, true);
 
                     UnityEngine.Object.Destroy(m);      //ensure that no memory is left over
                     return md;
