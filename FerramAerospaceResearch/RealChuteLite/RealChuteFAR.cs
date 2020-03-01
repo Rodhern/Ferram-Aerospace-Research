@@ -124,7 +124,7 @@ namespace FerramAerospaceResearch.RealChuteLite
         {
             get
             {
-                return (this.GroundStop || this.atmPressure == 0) && this.DeploymentState == DeploymentStates.CUT
+                return (this.GroundStop || this.atmPressure.NearlyEqual(0)) && this.DeploymentState == DeploymentStates.CUT
                        && this.chuteCount > 0 && FlightGlobals.ActiveVessel.isEVA;
             }
         }
@@ -176,7 +176,7 @@ namespace FerramAerospaceResearch.RealChuteLite
         {
             get
             {
-                if (this.caseMass == 0) { this.caseMass = this.part.mass; }
+                if (this.caseMass.NearlyEqual(0)) { this.caseMass = this.part.mass; }
                 return this.caseMass + this.ChuteMass;
             }
         }
@@ -214,7 +214,7 @@ namespace FerramAerospaceResearch.RealChuteLite
         {
             get
             {
-                if (this.GroundStop || this.atmPressure == 0) { return false; }
+                if (this.GroundStop || this.atmPressure.NearlyEqual(0)) { return false; }
                 if (this.DeploymentState == DeploymentStates.CUT) { return false; }
                 if (this.PressureCheck) { return true; }
                 return !this.PressureCheck && this.IsDeployed;
@@ -258,7 +258,7 @@ namespace FerramAerospaceResearch.RealChuteLite
         {
             get
             {
-                if (this.thermMass == 0)
+                if (this.thermMass.NearlyEqual(0))
                 {
                     this.thermMass = 1 / (specificHeat * this.ChuteMass);
                 }
@@ -681,7 +681,7 @@ namespace FerramAerospaceResearch.RealChuteLite
             this.chuteTemperature = Math.Max(PhysicsGlobals.SpaceTemperature, this.chuteTemperature + ((this.convFlux - emissiveFlux) * 0.001 * this.ConvectionArea * this.InvThermalMass * TimeWarp.fixedDeltaTime));
             if (this.chuteTemperature > maxTemp)
             {
-                
+
                 ScreenMessages.PostScreenMessage(Localizer.Format("RCLDestroyMessage", this.part.partInfo.title), 6f, ScreenMessageStyle.UPPER_LEFT);
                 Cut();
                 return false;
@@ -755,7 +755,7 @@ namespace FerramAerospaceResearch.RealChuteLite
                         break;
                     }
 
-                case "SEMIDEPLOYED":    //  stock 
+                case "SEMIDEPLOYED":    //  stock
                     {
                         this.parachute.gameObject.SetActive(true);
                         this.cap.gameObject.SetActive(false);
@@ -763,7 +763,7 @@ namespace FerramAerospaceResearch.RealChuteLite
                         break;
                     }
 
-                case "DEPLOYED":        //  stock 
+                case "DEPLOYED":        //  stock
                     {
                         this.parachute.gameObject.SetActive(true);
                         this.cap.gameObject.SetActive(false);
@@ -775,7 +775,7 @@ namespace FerramAerospaceResearch.RealChuteLite
 
         //Gives DragCube names
         public string[] GetDragCubeNames()
-        {   
+        {
             return cubeNames;
         }
 
@@ -918,7 +918,7 @@ namespace FerramAerospaceResearch.RealChuteLite
                         ScreenMessages.PostScreenMessage(Localizer.Format("RCLFailDeploy"), 2.5f, ScreenMessageStyle.UPPER_CENTER);
                         if (this.part.ShieldedFromAirstream) { ScreenMessages.PostScreenMessage(Localizer.Format("RCLFailShielded"), 2.5f, ScreenMessageStyle.UPPER_CENTER); }
                         else if (this.GroundStop) { ScreenMessages.PostScreenMessage(Localizer.Format("RCLFailGround"), 2.5f, ScreenMessageStyle.UPPER_CENTER); }
-                        else if (this.atmPressure == 0) { ScreenMessages.PostScreenMessage(Localizer.Format("RCLFailPres"), 2.5f, ScreenMessageStyle.UPPER_CENTER); }
+                        else if (this.atmPressure.NearlyEqual(0)) { ScreenMessages.PostScreenMessage(Localizer.Format("RCLFailPres"), 2.5f, ScreenMessageStyle.UPPER_CENTER); }
                         else { ScreenMessages.PostScreenMessage(Localizer.Format("RCLFailOther"), 2.5f, ScreenMessageStyle.UPPER_CENTER); }
                         this.displayed = true;
                     }
@@ -958,7 +958,7 @@ namespace FerramAerospaceResearch.RealChuteLite
             this.dragVector = -velocity.normalized;
 
             if (this.atmDensity > 0) { CalculateChuteFlux(); }
-            else { this.convFlux = 0; }                
+            else { this.convFlux = 0; }
 
             CalculateSafeToDeployEstimate();
 
@@ -1091,7 +1091,7 @@ namespace FerramAerospaceResearch.RealChuteLite
 
                 if (this.CanRepack) { SetRepack(); }
 
-                if (this.time != 0) { this.dragTimer = new PhysicsWatch(this.time); }
+                if (!this.time.NearlyEqual(0)) { this.dragTimer = new PhysicsWatch(this.time); }
                 if (this.DeploymentState != DeploymentStates.STOWED)
                 {
                     this.part.stackIcon.SetIconColor(XKCDColors.Red);

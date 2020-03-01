@@ -1,9 +1,9 @@
-﻿/*
-Ferram Aerospace Research v0.15.9.7 "Lumley"
+/*
+Ferram Aerospace Research v0.15.10.1 "Lundgren"
 =========================
 Aerodynamics model for Kerbal Space Program
 
-Copyright 2017, Michael Ferrara, aka Ferram4
+Copyright 2019, Michael Ferrara, aka Ferram4
 
    This file is part of Ferram Aerospace Research.
 
@@ -54,12 +54,19 @@ namespace FerramAerospaceResearch.FARGUI.FARFlightGUI
 {
     public class AirspeedSettingsGUI
     {
+        public static bool allEnabled = true;
         Vessel _vessel;
         GUIStyle buttonStyle;
+        public bool enabled
+        {
+            get;
+            set;
+        }
 
-        public AirspeedSettingsGUI(Vessel vessel)
+        public AirspeedSettingsGUI(Vessel vessel, bool enabled = true)
         {
             _vessel = vessel;
+            this.enabled = enabled;
             LoadSettings();
         }
 
@@ -122,11 +129,36 @@ namespace FerramAerospaceResearch.FARGUI.FARFlightGUI
         {
             value_out = velString;
             mode_out = velMode;
-            return active;
+            return allEnabled && enabled && active;
+        }
+
+        public double CalculateIAS()
+        {
+            // Rodhern: Presumably _vessel.mach ignores FARWind, which might not be the intended behaviour.
+            double pressureRatio = FARAeroUtil.RayleighPitotTubeStagPressure(_vessel.mach); //stag pressure at pitot tube face / ambient pressure
+
+            double velocity = pressureRatio - 1;
+            velocity *= _vessel.staticPressurekPa * 1000 * 2;
+            velocity /= 1.225;
+            velocity = Math.Sqrt(velocity);
+
+            return velocity;
+        }
+
+        public double CalculateEAS()
+        {
+            double densityRatio = (FARAeroUtil.GetCurrentDensity(_vessel) / 1.225);
+            return _vessel.srfSpeed * Math.Sqrt(densityRatio);
         }
 
         public void ChangeSurfVelocity()
         {
+            // No need to build the string
+            if (!(allEnabled && enabled))
+            {
+                return;
+            }
+
             active = false;
             //DaMichel: Avoid conflict between multiple vessels in physics range. We only want to show the speed of the active vessel.
             if (FlightGlobals.ActiveVessel != _vessel)
@@ -139,7 +171,7 @@ namespace FerramAerospaceResearch.FARGUI.FARFlightGUI
                 return;
 
             double unitConversion = 1;
-            string unitString;// = "m/s";
+            string unitString; // = "m/s";
             string caption;
             if (unitMode == SurfaceVelUnit.KNOTS)
             {
@@ -171,22 +203,15 @@ namespace FerramAerospaceResearch.FARGUI.FARFlightGUI
                 {
                     caption = surfModel_str[1];
                     //double densityRatio = (FARAeroUtil.GetCurrentDensity(_vessel) / 1.225);
-                    double pressureRatio = FARAeroUtil.RayleighPitotTubeStagPressure(_vessel.mach);     //stag pressure at pitot tube face / ambient pressure
 
-                    double velocity = pressureRatio - 1;
-                    velocity *= _vessel.staticPressurekPa * 1000 * 2;
-                    velocity /= 1.225;
-                    velocity = Math.Sqrt(velocity);
-
-                    velString = (velocity * unitConversion).ToString("F1") + unitString;
+                    velString = (CalculateIAS() * unitConversion).ToString("F1") + unitString;
                 }
                 else if (velMode == SurfaceVelMode.EAS)
                 {
                     caption = surfModel_str[2];
-                    double densityRatio = (FARAeroUtil.GetCurrentDensity(_vessel) / 1.225);
-                    velString = (_vessel.srfSpeed * Math.Sqrt(densityRatio) * unitConversion).ToString("F1") + unitString;
+                    velString = (CalculateEAS() * unitConversion).ToString("F1") + unitString;
                 }
-                else// if (velMode == SurfaceVelMode.MACH)
+                else // if (velMode == SurfaceVelMode.MACH)
                 {
                     caption = surfModel_str[3];
                     velString = _vessel.mach.ToString("F3");
@@ -208,6 +233,7 @@ namespace FerramAerospaceResearch.FARGUI.FARFlightGUI
             if(flightGUISettings == null)
             {
                 FARLogger.Error("Could not save Airspeed Settings because settings config list was null");
+                return;
             }
             ConfigNode node = null;
             for(int i = 0; i < flightGUISettings.Count; i++)

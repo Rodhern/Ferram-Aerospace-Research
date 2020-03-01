@@ -1,9 +1,9 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.7 "Lumley"
+Ferram Aerospace Research v0.15.10.1 "Lundgren"
 =========================
 Aerodynamics model for Kerbal Space Program
 
-Copyright 2017, Michael Ferrara, aka Ferram4
+Copyright 2019, Michael Ferrara, aka Ferram4
 
    This file is part of Ferram Aerospace Research.
 
@@ -44,6 +44,7 @@ Copyright 2017, Michael Ferrara, aka Ferram4
 
 using System;
 using UnityEngine;
+using FerramAerospaceResearch.FARUtils;
 
 namespace FerramAerospaceResearch
 {
@@ -52,6 +53,47 @@ namespace FerramAerospaceResearch
         public const double rad2deg = 180d / Math.PI;
         public const double deg2rad = Math.PI / 180d;
 
+        // ReSharper disable CompareOfFloatsByEqualityOperator
+        public static bool NearlyEqual(this double a, double b, double epsilon = 1e-14)
+        {
+            if (a.Equals(b))
+            {
+                // shortcut, handles infinities
+                return true;
+            }
+
+            double diff = Math.Abs(a - b);
+            if (a == 0 || b == 0 || diff < double.Epsilon)
+            {
+                // a or b is zero or both are extremely close to it
+                // relative error is less meaningful here
+                return diff < epsilon * double.Epsilon;
+            }
+
+            // use relative error
+            return diff / (Math.Abs(a) + Math.Abs(b)) < epsilon;
+        }
+
+        public static bool NearlyEqual(this float a, float b, float epsilon = 1e-6f)
+        {
+            if (a.Equals(b))
+            {
+                // shortcut, handles infinities
+                return true;
+            }
+
+            float diff = Math.Abs(a - b);
+            if (a == 0 || b == 0 || diff < float.Epsilon)
+            {
+                // a or b is zero or both are extremely close to it
+                // relative error is less meaningful here
+                return diff < epsilon * float.Epsilon;
+            }
+
+            // use relative error
+            return diff / (Math.Abs(a) + Math.Abs(b)) < epsilon;
+        }
+        // ReSharper restore CompareOfFloatsByEqualityOperator
 
         public static double Lerp(double x1, double x2, double y1, double y2, double x)
         {
@@ -150,7 +192,7 @@ namespace FerramAerospaceResearch
 
             bool flag = true;
             int iter = 0;
-            while (fs != 0 && Math.Abs(a - b) > epsilon && iter < maxIter)
+            while (!fs.NearlyEqual(0) && Math.Abs(a - b) > epsilon && iter < maxIter)
             {
                 if ((fa - fc) > double.Epsilon && (fb - fc) > double.Epsilon)    //inverse quadratic interpolation
                 {

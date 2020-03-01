@@ -1,9 +1,9 @@
-﻿/*
-Ferram Aerospace Research v0.15.9.7 "Lumley"
+/*
+Ferram Aerospace Research v0.15.10.1 "Lundgren"
 =========================
 Aerodynamics model for Kerbal Space Program
 
-Copyright 2017, Michael Ferrara, aka Ferram4
+Copyright 2019, Michael Ferrara, aka Ferram4
 
    This file is part of Ferram Aerospace Research.
 
@@ -86,9 +86,78 @@ namespace FerramAerospaceResearch
             return gui;
         }
 
+        /// <summary>
+        /// Toggle or enable/disable FAR speed display.
+        /// </summary>
+        /// <param name="enabled">Enable/disable the speed display, null value toggles the speed display</param>
+        /// <param name="v">Vessel to toggle or enable/disable speed display for, null to apply <paramref name="enabled"/> globally</param>
+        /// <returns>Success/failure of toggling or enabling/disabling the speed display</returns>
+        public static bool ToggleAirspeedDisplay(bool? enabled = null, Vessel v = null)
+        {
+            if (v == null)
+            {
+                if (enabled == null)
+                {
+                    AirspeedSettingsGUI.allEnabled = !AirspeedSettingsGUI.allEnabled;
+                }
+                else
+                {
+                    AirspeedSettingsGUI.allEnabled = (bool) enabled;
+                }
+                return true;
+            }
+
+            FlightGUI gui = VesselFlightInfo(v);
+            if (gui != null)
+            {
+                AirspeedSettingsGUI airspeedSettingsGUI = gui.airSpeedGUI;
+                if (airspeedSettingsGUI != null)
+                {
+                    if (enabled == null)
+                    {
+                        airspeedSettingsGUI.enabled = !airspeedSettingsGUI.enabled;
+                    }
+                    else
+                    {
+                        airspeedSettingsGUI.enabled = (bool) enabled;
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static FlightGUI VesselFlightInfo(Vessel v)
         {
             return Instance.GetFlightInfo(v);
+        }
+
+        public static double ActiveVesselIAS()
+        {
+            return VesselIAS(FlightGlobals.ActiveVessel);
+        }
+
+        public static double VesselIAS(Vessel vessel)
+        {
+            FlightGUI flightgui = VesselFlightInfo(vessel);
+            if (flightgui == null) return 0.0;
+            AirspeedSettingsGUI airspeedgui = flightgui.airSpeedGUI;
+            if (airspeedgui == null) return 0.0;
+            return airspeedgui.CalculateIAS();
+        }
+
+        public static double ActiveVesselEAS()
+        {
+            return VesselEAS(FlightGlobals.ActiveVessel);
+        }
+
+        public static double VesselEAS(Vessel vessel)
+        {
+            FlightGUI flightgui = VesselFlightInfo(vessel);
+            if (flightgui == null) return 0.0;
+            AirspeedSettingsGUI airspeedgui = flightgui.airSpeedGUI;
+            if (airspeedgui == null) return 0.0;
+            return airspeedgui.CalculateEAS();
         }
 
         public static double ActiveVesselDynPres()
@@ -99,10 +168,8 @@ namespace FerramAerospaceResearch
         public static double VesselDynPres(Vessel v)
         {
             FlightGUI gui = VesselFlightInfo(v);
-            if(gui == null)
-                return 0;
-            else
-                return gui.InfoParameters.dynPres;
+            if (gui == null) return 0.0;
+            return gui.InfoParameters.dynPres;
         }
 
         public static double ActiveVesselLiftCoeff()
@@ -113,10 +180,8 @@ namespace FerramAerospaceResearch
         public static double VesselLiftCoeff(Vessel v)
         {
             FlightGUI gui = VesselFlightInfo(v);
-            if(gui == null)
-                return 0;
-            else
-                return gui.InfoParameters.liftCoeff;
+            if (gui == null) return 0.0;
+            return gui.InfoParameters.liftCoeff;
         }
 
         public static double ActiveVesselDragCoeff()
@@ -127,10 +192,8 @@ namespace FerramAerospaceResearch
         public static double VesselDragCoeff(Vessel v)
         {
             FlightGUI gui = VesselFlightInfo(v);
-            if(gui == null)
-                return 0;
-            else
-                return gui.InfoParameters.dragCoeff;
+            if (gui == null) return 0.0;
+            return gui.InfoParameters.dragCoeff;
         }
 
         public static double ActiveVesselRefArea()
@@ -141,10 +204,8 @@ namespace FerramAerospaceResearch
         public static double VesselRefArea(Vessel v)
         {
             FlightGUI gui = VesselFlightInfo(v);
-            if(gui == null)
-                return 0;
-            else
-                return gui.InfoParameters.refArea;
+            if (gui == null) return 0.0;
+            return gui.InfoParameters.refArea;
         }
 
         public static double ActiveVesselTermVelEst()
@@ -155,10 +216,8 @@ namespace FerramAerospaceResearch
         public static double VesselTermVelEst(Vessel v)
         {
             FlightGUI gui = VesselFlightInfo(v);
-            if(gui == null)
-                return 0;
-            else
-                return gui.InfoParameters.termVelEst;
+            if (gui == null) return 0.0;
+            return gui.InfoParameters.termVelEst;
         }
 
         public static double ActiveVesselBallisticCoeff()
@@ -169,10 +228,8 @@ namespace FerramAerospaceResearch
         public static double VesselBallisticCoeff(Vessel v)
         {
             FlightGUI gui = VesselFlightInfo(v);
-            if(gui == null)
-                return 0;
-            else
-                return gui.InfoParameters.ballisticCoeff;
+            if (gui == null) return 0.0;
+            return gui.InfoParameters.ballisticCoeff;
         }
 
         public static double ActiveVesselAoA()
@@ -183,10 +240,8 @@ namespace FerramAerospaceResearch
         public static double VesselAoA(Vessel v)
         {
             FlightGUI gui = VesselFlightInfo(v);
-            if(gui == null)
-                return 0;
-            else
-                return gui.InfoParameters.aoA;
+            if (gui == null) return 0.0;
+            return gui.InfoParameters.aoA;
         }
 
         public static double ActiveVesselSideslip()
@@ -197,10 +252,8 @@ namespace FerramAerospaceResearch
         public static double VesselSideslip(Vessel v)
         {
             FlightGUI gui = VesselFlightInfo(v);
-            if(gui == null)
-                return 0;
-            else
-                return gui.InfoParameters.sideslipAngle;
+            if (gui == null) return 0.0;
+            return gui.InfoParameters.sideslipAngle;
         }
 
         public static double ActiveVesselTSFC()
@@ -211,10 +264,8 @@ namespace FerramAerospaceResearch
         public static double VesselTSFC(Vessel v)
         {
             FlightGUI gui = VesselFlightInfo(v);
-            if(gui == null)
-                return 0;
-            else
-                return gui.InfoParameters.tSFC;
+            if (gui == null) return 0.0;
+            return gui.InfoParameters.tSFC;
         }
 
         public static double ActiveVesselStallFrac()
@@ -225,10 +276,8 @@ namespace FerramAerospaceResearch
         public static double VesselStallFrac(Vessel v)
         {
             FlightGUI gui = VesselFlightInfo(v);
-            if(gui == null)
-                return 0;
-            else
-                return gui.InfoParameters.stallFraction;
+            if (gui == null) return 0.0;
+            return gui.InfoParameters.stallFraction;
         }
 
         /// <summary>
@@ -321,6 +370,47 @@ namespace FerramAerospaceResearch
             return false;
         }
 
+        /// <summary>
+        /// Returns the current aerodynamic force being experienced by the vehicle in world space
+        /// </summary>
+        /// <param name="v">The vessel that force is being queried</param>
+        /// <returns>The force on the vessel in world space</returns>
+        public static Vector3 VesselAerodynamicForce(Vessel v)
+        {
+            FlightGUI gui = VesselFlightInfo(v);
+            if (gui == null) return Vector3.zero;
+            return gui.InfoParameters.aerodynamicForce;
+        }
+
+        /// <summary>
+        /// Returns the current aerodynamic torque being experienced by the vehicle in world space
+        /// </summary>
+        /// <param name="v">The vessel that force is being queried</param>
+        /// <returns>The torque on the vessel in world space</returns>
+        public static Vector3 VesselAerodynamicTorque(Vessel v)
+        {
+            FlightGUI gui = VesselFlightInfo(v);
+            if (gui == null) return Vector2.zero;
+            return gui.InfoParameters.aerodynamicTorque;
+        }
+
+        /// <summary>
+        /// Returns the current aerodynamic force being experienced by the active vehicle in world space
+        /// </summary>
+        /// <returns>The force on the vessel in world space</returns>
+        public static Vector3 ActiveVesselAerodynamicForce()
+        {
+            return VesselAerodynamicForce(FlightGlobals.ActiveVessel);
+        }
+
+        /// <summary>
+        /// Returns the current aerodynamic torque being experienced by the active vehicle in world space
+        /// </summary>
+        /// <returns>The torque on the vessel in world space</returns>
+        public static Vector3 ActiveVesselAerodynamicTorque()
+        {
+            return VesselAerodynamicTorque(FlightGlobals.ActiveVessel);
+        }
         #endregion
 
         #region AeroPredictions

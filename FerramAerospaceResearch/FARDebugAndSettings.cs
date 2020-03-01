@@ -1,9 +1,9 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.7 "Lumley"
+Ferram Aerospace Research v0.15.10.1 "Lundgren"
 =========================
 Aerodynamics model for Kerbal Space Program
 
-Copyright 2017, Michael Ferrara, aka Ferram4
+Copyright 2019, Michael Ferrara, aka Ferram4
 
    This file is part of Ferram Aerospace Research.
 
@@ -183,7 +183,7 @@ namespace FerramAerospaceResearch
                 null,
                 null,
                 ApplicationLauncher.AppScenes.SPACECENTER | ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.FLIGHT,
-                (Texture)GameDatabase.Instance.GetTexture("FerramAerospaceResearch/Textures/icon_button_stock", false));
+                FARAssets.TextureCache.IconLarge);
         }
 
         void onAppLaunchToggle()
@@ -513,19 +513,19 @@ namespace FerramAerospaceResearch
             GUILayout.BeginHorizontal(GUILayout.Width(100));
             float tmp = input.r;
             input.r = (float)GUIUtils.TextEntryForDouble("", 0, input.r);
-            updateTexture |= tmp != input.r;
+            updateTexture |= !tmp.NearlyEqual(input.r);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal(GUILayout.Width(100));
             tmp = input.g;
             input.g = (float)GUIUtils.TextEntryForDouble("", 0, input.g);
-            updateTexture |= tmp != input.g;
+            updateTexture |= !tmp.NearlyEqual(input.g);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal(GUILayout.Width(100));
             tmp = input.b;
             input.b = (float)GUIUtils.TextEntryForDouble("", 0, input.b);
-            updateTexture |= tmp != input.b;
+            updateTexture |= !tmp.NearlyEqual(input.b);
             GUILayout.EndHorizontal();
 
             if (updateTexture)

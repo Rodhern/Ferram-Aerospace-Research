@@ -1,9 +1,9 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.7 "Lumley"
+Ferram Aerospace Research v0.15.10.1 "Lundgren"
 =========================
 Aerodynamics model for Kerbal Space Program
 
-Copyright 2017, Michael Ferrara, aka Ferram4
+Copyright 2019, Michael Ferrara, aka Ferram4
 
    This file is part of Ferram Aerospace Research.
 
@@ -194,6 +194,7 @@ namespace FerramAerospaceResearch.FARPartGeometry
             if (ignorePartModuleTransforms == null)
                 LoadPartModuleTransformStrings();
 
+            // ReSharper disable once PossibleNullReferenceException
             for (int i = 0; i < ignorePartModuleTransforms.Count; ++i)
             {
                 List<string> currentPartModuleTransforms = ignorePartModuleTransforms[i];

@@ -1,6 +1,6 @@
 ﻿/* Name:    FerramGraph (Graph GUI Plugin)
  * Version: 1.3   (KSP 0.22+)
-Copyright 2014, Michael Ferrara, aka Ferram4
+Copyright 2019, Michael Ferrara, aka Ferram4
 
     This file is part of FerramGraph.
 
@@ -272,11 +272,10 @@ namespace ferram4
                 MonoBehaviour.print("[FAR] [ferramGraph] Error: No line with that name exists");
                 return;
             }
+
             ferramGraphLine line;
-
-            allLines.TryGetValue(lineName, out line);
-
-            line.UpdateVerticalScaling(scaling);
+            if (allLines.TryGetValue(lineName, out line))
+                line.UpdateVerticalScaling(scaling);
         }
 
 
@@ -287,11 +286,10 @@ namespace ferram4
                 MonoBehaviour.print("[FAR] [ferramGraph] Error: No line with that name exists");
                 return;
             }
+
             ferramGraphLine line;
-
-            allLines.TryGetValue(lineName, out line);
-
-            line.UpdateHorizontalScaling(scaling);
+            if (allLines.TryGetValue(lineName, out line))
+                line.UpdateHorizontalScaling(scaling);
         }
 
         #endregion

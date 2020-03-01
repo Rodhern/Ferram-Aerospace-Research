@@ -1,9 +1,9 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.7 "Lumley"
+Ferram Aerospace Research v0.15.10.1 "Lundgren"
 =========================
 Aerodynamics model for Kerbal Space Program
 
-Copyright 2017, Michael Ferrara, aka Ferram4
+Copyright 2019, Michael Ferrara, aka Ferram4
 
    This file is part of Ferram Aerospace Research.
 
@@ -76,6 +76,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
         int _numGridLines;
 
         Material _rendererMaterial;
+        private static readonly int colorId = Shader.PropertyToID("_Color");
 
         public static EditorAreaRulingOverlay CreateNewAreaRulingOverlay(Color axisColor, Color crossSectionColor, Color derivColor, double yScaleMaxDistance, double yAxisGridScale)
         {
@@ -99,15 +100,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
             //Based on Kronal Vessel Viewer CoM axes rendering
             if (_rendererMaterial == null)
             {
-
-                Material lineMaterial;
-
-                if (!FARAssets.materialDict.TryGetValue("FARGraphMaterial", out lineMaterial))
-                {
-                    //TODO: definitely replace this with a proper shader when we can
-                    FARLogger.Warning("Could not load cross-section shader; using fallback shader");
-                    lineMaterial = new Material(Shader.Find("Sprites/Default"));
-                }
+                Material lineMaterial = FARAssets.ShaderCache.LineRenderer.Material;
 
                 _rendererMaterial = new Material(lineMaterial);
                 _rendererMaterial.hideFlags = HideFlags.HideAndDontSave;
@@ -167,7 +160,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
             if (material.HasProperty("_Color"))
             {
                 // FARLogger.Info("Setting _Color on " + material + "to " + color);
-                rendererMaterial.SetColor("_Color", color);
+                rendererMaterial.SetColor(colorId, color);
             }
             else
                 FARLogger.Warning("Material " + material + " has no _Color property");
@@ -344,10 +337,12 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
 
         void UpdateRenderer(LineRenderer renderer, Matrix4x4 transformMatrix, double[] xCoords, double[] yCoords, double yScalingFactor)
         {
-            renderer.transform.parent = EditorLogic.RootPart.partTransform;
-            renderer.transform.localPosition = Vector3.zero;
-            renderer.transform.localRotation = Quaternion.identity;
-            renderer.transform.SetAsFirstSibling();
+            // getting transform is internal call, cache
+            Transform transform = renderer.transform;
+            transform.parent = EditorLogic.RootPart.partTransform;
+            transform.localPosition = Vector3.zero;
+            transform.localRotation = Quaternion.identity;
+            transform.SetAsFirstSibling();
 
             // renderer.positionCount = xCoords.Length; // Rodhern: Downgrade to KSP 1.3.1
             renderer.SetVertexCount(xCoords.Length);    //  --

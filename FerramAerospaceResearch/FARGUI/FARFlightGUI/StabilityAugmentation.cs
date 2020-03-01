@@ -1,9 +1,9 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.7 "Lumley"
+Ferram Aerospace Research v0.15.10.1 "Lundgren"
 =========================
 Aerodynamics model for Kerbal Space Program
 
-Copyright 2017, Michael Ferrara, aka Ferram4
+Copyright 2019, Michael Ferrara, aka Ferram4
 
    This file is part of Ferram Aerospace Research.
 
@@ -385,6 +385,7 @@ namespace FerramAerospaceResearch.FARGUI.FARFlightGUI
             if (flightGUISettings == null)
             {
                 FARLogger.Error("Could not save Stability Augmentation Settings because settings config list was null");
+                return;
             }
             ConfigNode node = null;
             for (int i = 0; i < flightGUISettings.Count; i++)

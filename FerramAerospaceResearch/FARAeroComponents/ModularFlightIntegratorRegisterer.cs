@@ -1,9 +1,9 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.7 "Lumley"
+Ferram Aerospace Research v0.15.10.1 "Lundgren"
 =========================
 Aerodynamics model for Kerbal Space Program
 
-Copyright 2017, Michael Ferrara, aka Ferram4
+Copyright 2019, Michael Ferrara, aka Ferram4
 
    This file is part of Ferram Aerospace Research.
 
@@ -105,7 +105,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
                 {
                     part.dragVector = rb.velocity + Krakensbane.GetFrameVelocity() - FARWind.GetWind(FlightGlobals.currentMainBody, part, rb.position);
                     part.dragVectorSqrMag = part.dragVector.sqrMagnitude;
-                    if (part.dragVectorSqrMag == 0f || part.ShieldedFromAirstream)
+                    if (part.dragVectorSqrMag.NearlyEqual(0) || part.ShieldedFromAirstream)
                     {
                         part.dragVectorMag = 0f;
                         part.dragVectorDir = Vector3.zero;

@@ -1,0 +1,16 @@
+ManifestFileVersion: 0
+CRC: 4064553516
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 1d4781ae97bb60cc1a35e15de32ab163
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: bf45a693cba34bf6690ae7a121f21f9c
+HashAppended: 0
+ClassTypes:
+- Class: 48
+  Script: {instanceID: 0}
+Assets:
+- Assets/Shaders/DebugVoxelMesh.shader
+Dependencies: []

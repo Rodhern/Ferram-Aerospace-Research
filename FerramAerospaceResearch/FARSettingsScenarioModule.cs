@@ -1,9 +1,9 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.7 "Lumley"
+Ferram Aerospace Research v0.15.10.1 "Lundgren"
 =========================
 Aerodynamics model for Kerbal Space Program
 
-Copyright 2017, Michael Ferrara, aka Ferram4
+Copyright 2019, Michael Ferrara, aka Ferram4
 
    This file is part of Ferram Aerospace Research.
 
@@ -104,13 +104,11 @@ namespace FerramAerospaceResearch
 
         public static void MainMenuBuildDefaultScenarioModule()
         {
-            if (instance == null)
-            {
-                instance = new FARSettingsScenarioModule();
-                FARLogger.Info("Creating new setting module for tutorial/scenario");
-                instance.OnLoad(new ConfigNode());
-                instance.Start();
-            }
+            if (instance != null) return;
+            instance = new GameObject().AddComponent<FARSettingsScenarioModule>();
+            FARLogger.Info("Creating new setting module for tutorial/scenario");
+            instance.OnLoad(new ConfigNode());
+            instance.Start();
         }
 
 
@@ -139,12 +137,6 @@ namespace FerramAerospaceResearch
 
             //GameEvents.onGameStateSave.Add(OnSave);
             newGame = false;
-        }
-
-        void OnDestroy()
-        {
-            //GamePersistence.SaveGame("persistent", HighLogic.SaveFolder, SaveMode.OVERWRITE);
-            //GameEvents.onGameStateSave.Remove(OnSave);
         }
 
         public override void OnSave(ConfigNode node)

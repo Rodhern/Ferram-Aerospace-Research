@@ -1,8 +1,8 @@
-﻿/*Ferram Aerospace Research v0.15.9.7 "Lumley"
+﻿/*Ferram Aerospace Research v0.15.10.1 "Lundgren"
 =========================
 Aerodynamics model for Kerbal Space Program
 
-Copyright 2017, Michael Ferrara, aka Ferram4
+Copyright 2019, Michael Ferrara, aka Ferram4
 
    This file is part of Ferram Aerospace Research.
 
@@ -118,12 +118,14 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
             return solution;
         }
 
-
         private double[] NextState(double[] currentState)
         {
             double[] next = new double[currentState.Length];
-            double[] f1, f2, f3, f4;
-            f1 = f2 = f3 = f4 = new double[currentState.Length];
+            // dkavolis: f1-f4 where all pointing to the same array...
+            var f1 = new double[currentState.Length];
+            var f2 = new double[currentState.Length];
+            var f3 = new double[currentState.Length];
+            var f4 = new double[currentState.Length];
 
             for (int j = 0; j < next.Length; j++)
             {
@@ -161,7 +163,6 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
             {
                 next[i] = currentState[i] + dt * (c[0] * f1[i] + c[1] * f2[i] + c[2] * f3[i] + c[3] * f4[i]);
             }
-
 
             return next;
         }

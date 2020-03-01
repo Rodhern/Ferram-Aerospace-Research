@@ -1,9 +1,9 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.7 "Lumley"
+Ferram Aerospace Research v0.15.10.1 "Lundgren"
 =========================
 Aerodynamics model for Kerbal Space Program
 
-Copyright 2017, Michael Ferrara, aka Ferram4
+Copyright 2019, Michael Ferrara, aka Ferram4
 
    This file is part of Ferram Aerospace Research.
 
@@ -111,6 +111,7 @@ namespace FerramAerospaceResearch.FARAeroComponents
             get { return legacyWingModel; }
         }
         private ModuleLiftingSurface stockAeroSurfaceModule;
+        private bool updateVisualization;
 
         public ProjectedArea ProjectedAreas
         {
@@ -355,10 +356,16 @@ namespace FerramAerospaceResearch.FARAeroComponents
             if (FlightGUI.vesselFlightGUI != null && vessel != null && FlightGUI.vesselFlightGUI.TryGetValue(vessel, out flightGUI))
                 aeroVizGUI = flightGUI.AeroVizGUI;
 
-            if (aeroVizGUI != null && aeroVizGUI.AnyVisualizationActive && HighLogic.LoadedSceneIsFlight && !PhysicsGlobals.ThermalColorsDebug)
+            if (aeroVizGUI == null) return;
+
+            bool anyActive = aeroVizGUI.AnyVisualizationActive;
+            if ((anyActive || updateVisualization) && HighLogic.LoadedSceneIsFlight && !PhysicsGlobals.ThermalColorsDebug)
             {
                 Color tintColor = AeroVisualizationTintingCalculation(aeroVizGUI);
                 materialColorUpdater.Update(tintColor);
+
+                // this will disable visualization if none are active delayed by 1 frame to clean up any tint
+                updateVisualization = anyActive;
             }
         }
 

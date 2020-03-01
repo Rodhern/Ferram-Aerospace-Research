@@ -1,9 +1,9 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.7 "Lumley"
+Ferram Aerospace Research v0.15.10.1 "Lundgren"
 =========================
 Aerodynamics model for Kerbal Space Program
 
-Copyright 2017, Michael Ferrara, aka Ferram4
+Copyright 2019, Michael Ferrara, aka Ferram4
 
    This file is part of Ferram Aerospace Research.
 
@@ -309,7 +309,11 @@ namespace FerramAerospaceResearch.FARAeroComponents
 
         public void SimulateAeroProperties(out Vector3 aeroForce, out Vector3 aeroTorque, Vector3 velocityWorldVector, double altitude)
         {
+            // Rodhern: It seems that this method, 'SimulateAeroProperties', is only used in FARAPI, which in turn can be used by say KSPTrajectories.
+            //          The parameter 'FARCenterQuery dummy' is from a code fix by Benjamin Chung (commit 18fbb9d29431679a4de9dfc22a443f400d2d4f8b).
+
             FARCenterQuery center = new FARCenterQuery();
+            FARCenterQuery dummy = new FARCenterQuery();
 
             float pressure;
             float density;
@@ -335,13 +339,14 @@ namespace FerramAerospaceResearch.FARAeroComponents
             float reynoldsPerLength = reynoldsNumber / (float)Length;
             float pseudoKnudsenNumber = machNumber / (reynoldsNumber + machNumber);
             float skinFriction = (float)FARAeroUtil.SkinFrictionDrag(reynoldsNumber, machNumber);
+            FlightEnv fenv = FlightEnv.NewPredicted(vessel.mainBody, altitude, machNumber);
 
             if (_currentAeroSections != null)
             {
                 for (int i = 0; i < _currentAeroSections.Count; i++)
                 {
                     FARAeroSection curSection = _currentAeroSections[i];
-                    if(curSection != null)
+                    if (curSection != null)
                         curSection.PredictionCalculateAeroForces(density, machNumber, reynoldsPerLength, pseudoKnudsenNumber, skinFriction, velocityWorldVector, center);
                 }
 
@@ -349,7 +354,10 @@ namespace FerramAerospaceResearch.FARAeroComponents
                 {
                     FARWingAerodynamicModel curWing = _legacyWingModels[i];
                     if ((object)curWing != null)
-                        curWing.PrecomputeCenterOfLift(velocityWorldVector, FlightEnv.NewPredicted(vessel.mainBody, altitude, machNumber), center); // Rodhern: It seems that this method, 'SimulateAeroProperties', is only used in FARAPI, which in turn can be used by say KSPTrajectories.
+                    {
+                        Vector3d force = curWing.PrecomputeCenterOfLift(velocityWorldVector, fenv, dummy);
+                        center.AddForce(curWing.transform.position, force);
+                    }
                 }
             }
 

@@ -1,9 +1,9 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.7 "Lumley"
+Ferram Aerospace Research v0.15.10.1 "Lundgren"
 =========================
 Aerodynamics model for Kerbal Space Program
 
-Copyright 2017, Michael Ferrara, aka Ferram4
+Copyright 2019, Michael Ferrara, aka Ferram4
 
    This file is part of Ferram Aerospace Research.
 
@@ -167,6 +167,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
             guiRect.width = 650;
 
 
+            //GameEvents.onEditorVariantApplied.Add(UpdateGeometryEvent); // Rodhern: Downgrade to KSP 1.3.1
             GameEvents.onEditorPartEvent.Add(UpdateGeometryEvent);
             GameEvents.onEditorUndo.Add(ResetEditorEvent);
             GameEvents.onEditorRedo.Add(ResetEditorEvent);
@@ -196,6 +197,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
 
         void OnDestroy()
         {
+            //GameEvents.onEditorVariantApplied.Remove(UpdateGeometryEvent); // Rodhern: Downgrade to KSP 1.3.1
             GameEvents.onEditorPartEvent.Remove(UpdateGeometryEvent);
             GameEvents.onEditorUndo.Remove(ResetEditorEvent);
             GameEvents.onEditorRedo.Remove(ResetEditorEvent);
@@ -203,7 +205,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
             GameEvents.onEditorLoad.Remove(ResetEditorEvent);
 
             GameEvents.onGUIEngineersReportReady.Remove(AddDesignConcerns);
-            GameEvents.onGUIEngineersReportDestroy.Remove(AddDesignConcerns);
+            GameEvents.onGUIEngineersReportDestroy.Remove(RemoveDesignConcerns);
 
             //EditorLogic.fetch.Unlock("FAREdLock");
 
@@ -239,6 +241,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
 
             RequestUpdateVoxel();
         }
+
         private void ResetEditorEvent(ShipConstruct construct, CraftBrowserDialog.LoadType type)
         {
             ResetEditor();
@@ -256,13 +259,19 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
             RequestUpdateVoxel();
         }
 
+        // Rodhern: Downgrade to KSP 1.3.1; part variants are introduced in KSP 1.4.
+        //private void UpdateGeometryEvent(Part part, PartVariant partVariant)
+        //{
+        //    UpdateGeometryEvent(ConstructionEventType.Unknown, part);
+        //}
+
         private void UpdateGeometryEvent(ConstructionEventType type, Part pEvent)
         {
             if (type == ConstructionEventType.PartRotated ||
-            type == ConstructionEventType.PartOffset ||
-            type == ConstructionEventType.PartAttached ||
-            type == ConstructionEventType.PartDetached ||
-            type == ConstructionEventType.PartRootSelected ||
+                type == ConstructionEventType.PartOffset ||
+                type == ConstructionEventType.PartAttached ||
+                type == ConstructionEventType.PartDetached ||
+                type == ConstructionEventType.PartRootSelected ||
                 type == ConstructionEventType.Unknown)
             {
                 if (EditorLogic.SortedShipList.Count > 0)
@@ -276,6 +285,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
 
         private void UpdateGeometryModule(ConstructionEventType type, Part p)
         {
+            if ((System.Object)p == null) return;
             GeometryPartModule g = p.GetComponent<GeometryPartModule>();
             if (g != null && g.Ready)
             {
@@ -288,6 +298,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
 
         private void UpdateGeometryModule(Part p)
         {
+            if ((System.Object)p == null) return;
             GeometryPartModule g = p.GetComponent<GeometryPartModule>();
             if (g != null && g.Ready)
             {
@@ -319,15 +330,16 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
                         _wingAerodynamicModel.Add(c);
                     }
             }
-
         }
         #endregion
+
         void Awake()
         {
             FARThreading.VoxelizationThreadpool.RunInMainThread = Debug.isDebugBuild;
             if (FARDebugValues.useBlizzyToolbar)
                 GenerateBlizzyToolbarButton();
         }
+
         void Update()
         {
             FARThreading.VoxelizationThreadpool.Instance.ExecuteMainThreadTasks();
@@ -555,7 +567,21 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
         {
             GUILayout.BeginHorizontal();
             if (GUILayout.Button(Localizer.Format("FARDebugVoxels")))
-                _vehicleAero.DebugVisualizeVoxels(EditorLogic.RootPart.partTransform.localToWorldMatrix);
+            {
+                Matrix4x4? localToWorldMatrix = null;
+                try
+                {
+                    // even with no root parts in the editor, neither RootPart or its partTransform are null
+                    // but trying to get locaToWorldMatrix throws NRE
+                    localToWorldMatrix = EditorLogic.RootPart.partTransform.localToWorldMatrix;
+                }
+                catch (NullReferenceException)
+                {
+                    // do nothing
+                }
+                if (localToWorldMatrix != null)
+                    _vehicleAero.DebugVisualizeVoxels((Matrix4x4)localToWorldMatrix);
+            }
             GUILayout.EndHorizontal();
         }
 
@@ -680,13 +706,19 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
                 {
                     PartModule m = p.Modules["FSwheel"];
                     MethodInfo method = m.GetType().GetMethod("animate", BindingFlags.Instance | BindingFlags.NonPublic);
-                    method.Invoke(m, gearToggle ? new object[] { "Deploy" } : new object[] { "Retract" });
+                    if (method == null)
+                        FARLogger.Error("FSwheel does not have method 'animate");
+                    else
+                        method.Invoke(m, gearToggle ? new object[] { "Deploy" } : new object[] { "Retract" });
                 }
                 if (p.Modules.Contains("FSBDwheel"))
                 {
                     PartModule m = p.Modules["FSBDwheel"];
                     MethodInfo method = m.GetType().GetMethod("animate", BindingFlags.Instance | BindingFlags.NonPublic);
-                    method.Invoke(m, gearToggle ? new object[] { "Deploy" } : new object[] { "Retract" });
+                    if (method == null)
+                        FARLogger.Error("FSBDwheel does not have method 'animate");
+                    else
+                        method.Invoke(m, gearToggle ? new object[] { "Deploy" } : new object[] { "Retract" });
                 }
                 if (p.Modules.Contains("KSPWheelAdjustableGear"))
                 {
@@ -694,7 +726,10 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
                     MethodInfo method = m.GetType().GetMethod("deploy", BindingFlags.Instance | BindingFlags.Public);
                     try
                     {
-                        method.Invoke(m, null);
+                        if (method == null)
+                            FARLogger.Error("KSPWheelAdjustableGear does not have method 'animate'.");
+                        else
+                            method.Invoke(m, null);
                     }
                     catch(Exception e)
                     {

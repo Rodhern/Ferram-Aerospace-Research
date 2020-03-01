@@ -1,9 +1,9 @@
 ﻿/*
-Ferram Aerospace Research v0.15.9.7 "Lumley"
+Ferram Aerospace Research v0.15.10.1 "Lundgren"
 =========================
 Aerodynamics model for Kerbal Space Program
 
-Copyright 2017, Michael Ferrara, aka Ferram4
+Copyright 2019, Michael Ferrara, aka Ferram4
 
    This file is part of Ferram Aerospace Research.
 
@@ -224,9 +224,9 @@ namespace FerramAerospaceResearch
 
         private static void SetDefaultValuesIfNoValuesLoaded()
         {
-            if (massPerWingAreaSupported == 0)
+            if (massPerWingAreaSupported.NearlyEqual(0))
                 massPerWingAreaSupported = 0.05;
-            if (massStressPower == 0)
+            if (massStressPower.NearlyEqual(0))
                 massStressPower = 1.2;
         }
 
@@ -636,7 +636,7 @@ namespace FerramAerospaceResearch
 
         public static double CalculateReynoldsNumber(double density, double lengthScale, double vel, double machNumber, double externalTemp, double gamma)
         {
-            if (lengthScale == 0)
+            if (lengthScale.NearlyEqual(0))
                 return 0;
 
             double refTemp = externalTemp * ReferenceTemperatureRatio(machNumber, 0.843, gamma);
@@ -647,7 +647,7 @@ namespace FerramAerospaceResearch
 
         public static double SkinFrictionDrag(double density, double lengthScale, double vel, double machNumber, double externalTemp, double gamma)
         {
-            if (lengthScale == 0)
+            if (lengthScale.NearlyEqual(0))
                 return 0;
 
             double Re = CalculateReynoldsNumber(density, lengthScale, vel, machNumber, externalTemp, gamma);
