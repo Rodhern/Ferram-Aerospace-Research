@@ -104,12 +104,17 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
             input.alpha = stableCondition.stableAoA + 2;
             iterationSimVars.ResetAndGetClCdCmSteady(input, out pertOutput);
 
+            // Rodhern: A change is made to the Xw formula. Theoretically doing " -= nominalOutput.Cl" is the most 'correct',
+            //  it does however in some way mix the Cd value measured at 'stableAoA + 2' with a Cl value measured at 'StableAoA'.
+            //  Because Cl and Cd are very AoA-dependent, the asymmetrical measurement (AoA+=[0;2]) is quite affected.
+            double pertOutCl = pertOutput.Cl;
+
             pertOutput.Cl = (pertOutput.Cl - nominalOutput.Cl) / (2 * FARMathUtil.deg2rad);                   //vert vel derivs
             pertOutput.Cd = (pertOutput.Cd - nominalOutput.Cd) / (2 * FARMathUtil.deg2rad);
             pertOutput.Cm = (pertOutput.Cm - nominalOutput.Cm) / (2 * FARMathUtil.deg2rad);
 
             pertOutput.Cl += nominalOutput.Cd;
-            pertOutput.Cd -= nominalOutput.Cl;
+            pertOutput.Cd -= pertOutCl; // Rodhern: Convergence is worse, but possibly the numerical value is more useful this way.
 
             pertOutput.Cl *= -q * area / (mass * u0);
             pertOutput.Cd *= -q * area / (mass * u0);

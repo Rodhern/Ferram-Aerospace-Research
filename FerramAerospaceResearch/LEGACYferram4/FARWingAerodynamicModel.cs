@@ -278,7 +278,7 @@ namespace ferram4
         [KSPField(isPersistant = false)]
         public double TaperRatio;
 
-        [KSPField(isPersistant = false, guiActive = true, guiName = "FARWingStalled")]
+        [KSPField(isPersistant = false, guiActive = true, guiName = "FARWingStalled", guiFormat = "P1")]
         protected double stall = 0;
 
         private double minStall = 0;

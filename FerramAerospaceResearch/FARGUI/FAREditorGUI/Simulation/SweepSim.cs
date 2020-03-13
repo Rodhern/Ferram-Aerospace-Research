@@ -80,7 +80,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
 
             for (int i = 0; i < numPoints; i++)
             {
-                input.fltenv.MachNumber = i / (double)numPoints * (upperBound - lowerBound) + lowerBound;
+                input.fltenv.MachNumber = lowerBound + (upperBound - lowerBound) * (i == 0? 0 : i / (numPoints - 1.0));
 
                 if (input.fltenv.MachNumber < 1E-3)
                     input.fltenv.MachNumber = 1E-3;
@@ -135,9 +135,9 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
             {
                 double angle = 0;
                 if (i < numPoints)
-                    angle = i / (double)numPoints * (upperBound - lowerBound) + lowerBound;
+                    angle = lowerBound + (upperBound - lowerBound) * (i == 0? 0 : i / (numPoints - 1.0));
                 else
-                    angle = (i - (double)numPoints + 1) / (double)numPoints * (lowerBound - upperBound) + upperBound;
+                    angle = upperBound + (lowerBound - upperBound) * (i == numPoints ? 0 : (i - numPoints) / (numPoints - 1.0));
                 input.alpha = angle;
 
                 InstantConditionSimOutput output;
