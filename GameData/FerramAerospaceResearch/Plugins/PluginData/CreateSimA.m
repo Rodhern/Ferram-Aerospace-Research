@@ -82,7 +82,7 @@ function [longA, latA, T, x_long, x_lat] = CreateSimA (j, T, x0_long, x0_lat)
   
   if nargin < 1 || nargin > 1,
     clf;
-    yellow = "y";
+    yellow = "k"; % black because yellow is difficult to see on white.
     subplot(2,1,1); x = x_long;
     plot(T,x(1,:),"g", T,x(2,:),yellow, T,x(3,:),"r", T, x(4,:), "c");
     grid on; legend("w", "u", "q", "theta");
@@ -95,7 +95,7 @@ endfunction
 
 function [A] = LongitudinalA(d)
   mac2u = d.craft.chord / (2*d.env.speed); % can be used for backward compability
-  warning(["Longitudinal mac2u factor " num2str(mac2u) " used."]);
+  mac2u = 1; % Notice: The 'mac/(2u)' scaling is NOT used in the current version!
   
   ZXMw = [d.deriv.Zw, d.deriv.Xw, d.deriv.Mw]';
   ZXMu = [d.deriv.Zu, d.deriv.Xu, d.deriv.Mu]';
@@ -109,7 +109,7 @@ endfunction
 function [A] = LateralA (d)
   u0 = d.env.speed;
   b2u = d.craft.span / (2*u0); % can be used for backward compability
-  warning(["Lateral b2u factor " num2str(b2u) " used."]);
+  b2u = 1; % Notice: The 'b/(2u)' scaling is NOT used in the current version!
   factor_xz_x = d.craft.inertia.lxz / d.craft.inertia.lxx;
   factor_xz_z = d.craft.inertia.lxz / d.craft.inertia.lzz;
   factor_invxz = 1 / (1 - factor_xz_x * factor_xz_z);

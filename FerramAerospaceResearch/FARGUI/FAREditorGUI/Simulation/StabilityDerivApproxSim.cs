@@ -76,7 +76,7 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
             double factor_invxz = 1 / (1 - factor_xz_x * factor_xz_z);
 
             FARLogger.Info("u0= " + u0);
-            FARLogger.Info("b/(2u)= " + b2u);
+            FARLogger.Info("b/(2u)= " + b2u + " IGNORED!");
             FARLogger.Info("effg= " + effg + ", after multiplication with cos(AoA).");
             FARLogger.Info("Ixz/Ix= " + factor_xz_x + ", used to add yaw to roll-deriv.");
             FARLogger.Info("Ixz/Iz= " + factor_xz_z + ", used to add roll to yaw-deriv.");
@@ -84,8 +84,8 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
 
             // Rodhern: For possible backward compability the rotation (moment) derivatives can be
             //  scaled by "b/(2u)" (for pitch rate "mac/(2u)").
-            for (int h = 18; h <= 23; h++)
-                Derivs[h] = Derivs[h] * b2u;
+            //for (int h = 18; h <= 23; h++)
+            //    Derivs[h] = Derivs[h] * b2u;
 
             Derivs[15] = Derivs[15] / u0;
             Derivs[18] = Derivs[18] / u0;
@@ -184,13 +184,13 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
             double MAC2u = vehicleData.MAC / (2 * vehicleData.nominalVelocity);
             double effg = _instantCondition.CalculateEffectiveGravity(vehicleData.body, vehicleData.altitude, vehicleData.nominalVelocity);
 
-            FARLogger.Info("MAC/(2u)= " + MAC2u);
+            FARLogger.Info("MAC/(2u)= " + MAC2u + " IGNORED!");
             FARLogger.Info("effg= " + effg);
 
             // Rodhern: For possible backward compability the rotation (moment) derivatives can be
             //  scaled by "mac/(2u)" (pitch) and "b/(2u)" (roll and yaw).
-            for (int h = 9; h <= 11; h++)
-                Derivs[h] = Derivs[h] * MAC2u;
+            //for (int h = 9; h <= 11; h++)
+            //    Derivs[h] = Derivs[h] * MAC2u;
 
             Derivs[9] = Derivs[9] + vehicleData.nominalVelocity;
 
