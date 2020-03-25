@@ -50,6 +50,7 @@ using FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation;
 using KSP.Localization;
 using UnityEngine;
 using ferram4;
+using FerramAerospaceResearch.FARUtils;
 
 namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
 {
@@ -101,8 +102,6 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
 
             GUILayout.EndHorizontal();
             StabilityDerivOutput vehicleData = simManager.vehicleData;
-
-
 
             if (simMode == SimMode.LONG)
             {
@@ -198,8 +197,6 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
             GUILayout.EndVertical();
-
-
         }
 
         private void DataInput(InitialConditions inits, StabilityDerivOutput vehicleData, bool longitudinal)
@@ -230,8 +227,8 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI
                 for (int i = 0; i < initCond.Length; i++)
                 {
                     initCond[i] = Convert.ToDouble(inits.inits[i]) * inits.scaling[i];
+                    FARLogger.Info("initCond[" + i + "]= " + initCond[i] + ", after scaling with " + inits.scaling[i] + ".");
                 }
-
 
                 GraphData data;
                 if(longitudinal)

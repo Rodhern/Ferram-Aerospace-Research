@@ -62,50 +62,62 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
         {
             SimMatrix A = new SimMatrix(4, 4);
 
-            A.PrintToConsole();
-
             int i = 0;
             int j = 0;
-            int num = 0;
             double[] Derivs = new double[27];
 
             vehicleData.stabDerivs.CopyTo(Derivs, 0);
 
-            Derivs[15] = Derivs[15] / vehicleData.nominalVelocity;
-            Derivs[18] = Derivs[18] / vehicleData.nominalVelocity;
-            Derivs[21] = Derivs[21] / vehicleData.nominalVelocity - 1;
+            double u0 = vehicleData.nominalVelocity;
+            double b2u = vehicleData.b / (2 * u0);
+            double effg = _instantCondition.CalculateEffectiveGravity(vehicleData.body, vehicleData.altitude, u0) * Math.Cos(vehicleData.stableCondition.stableAoA * Math.PI / 180);
+            double factor_xz_x = Derivs[26] / Derivs[0];
+            double factor_xz_z = Derivs[26] / Derivs[2];
+            double factor_invxz = 1 / (1 - factor_xz_x * factor_xz_z);
 
-            double Lb = Derivs[16] / (1 - Derivs[26] * Derivs[26] / (Derivs[0] * Derivs[2]));
-            double Nb = Derivs[17] / (1 - Derivs[26] * Derivs[26] / (Derivs[0] * Derivs[2]));
+            FARLogger.Info("u0= " + u0);
+            FARLogger.Info("b/(2u)= " + b2u);
+            FARLogger.Info("effg= " + effg + ", after multiplication with cos(AoA).");
+            FARLogger.Info("Ixz/Ix= " + factor_xz_x + ", used to add yaw to roll-deriv.");
+            FARLogger.Info("Ixz/Iz= " + factor_xz_z + ", used to add roll to yaw-deriv.");
+            FARLogger.Info("(1 - Ixz^2/(IxIz))^-1= " + factor_invxz);
 
-            double Lp = Derivs[19] / (1 - Derivs[26] * Derivs[26] / (Derivs[0] * Derivs[2]));
-            double Np = Derivs[20] / (1 - Derivs[26] * Derivs[26] / (Derivs[0] * Derivs[2]));
+            // Rodhern: For possible backward compability the rotation (moment) derivatives can be
+            //  scaled by "b/(2u)" (for pitch rate "mac/(2u)").
+            for (int h = 18; h <= 23; h++)
+                Derivs[h] = Derivs[h] * b2u;
 
-            double Lr = Derivs[22] / (1 - Derivs[26] * Derivs[26] / (Derivs[0] * Derivs[2]));
-            double Nr = Derivs[23] / (1 - Derivs[26] * Derivs[26] / (Derivs[0] * Derivs[2]));
+            Derivs[15] = Derivs[15] / u0;
+            Derivs[18] = Derivs[18] / u0;
+            Derivs[21] = Derivs[21] / u0 - 1;
 
-            Derivs[16] = Lb + Derivs[26] / Derivs[0] * Nb;
-            Derivs[17] = Nb + Derivs[26] / Derivs[2] * Lb;
+            double Lb = Derivs[16] * factor_invxz;
+            double Nb = Derivs[17] * factor_invxz;
 
-            Derivs[19] = Lp + Derivs[26] / Derivs[0] * Np;
-            Derivs[20] = Np + Derivs[26] / Derivs[2] * Lp;
+            double Lp = Derivs[19] * factor_invxz;
+            double Np = Derivs[20] * factor_invxz;
 
-            Derivs[22] = Lr + Derivs[26] / Derivs[0] * Nr;
-            Derivs[23] = Nr + Derivs[26] / Derivs[2] * Lr;
+            double Lr = Derivs[22] * factor_invxz;
+            double Nr = Derivs[23] * factor_invxz;
 
-            for (int k = 0; k < Derivs.Length; k++)
+            Derivs[16] = Lb + factor_xz_x * Nb;
+            Derivs[17] = Nb + factor_xz_z * Lb;
+
+            Derivs[19] = Lp + factor_xz_x * Np;
+            Derivs[20] = Np + factor_xz_z * Lp;
+
+            Derivs[22] = Lr + factor_xz_x * Nr;
+            Derivs[23] = Nr + factor_xz_z * Lr;
+
+            for (int k = 15; k < Derivs.Length; k++)
             {
                 double f = Derivs[k];
-                if (num < 15)
-                {
-                    num++;              //Avoid Ix, Iy, Iz and long derivs
-                    continue;
-                }
-                else
-                    num++;
-                FARLogger.Info("" + i + "," + j);
+
                 if (i <= 2)
+                {
+                    FARLogger.Info("A[" + i + "," + j + "]= f_" + k + " = " + f + ", after manipulation.");
                     A.Add(f, i, j);
+                }
 
                 if (j < 2)
                     j++;
@@ -114,11 +126,9 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
                     j = 0;
                     i++;
                 }
-
             }
-            A.Add(_instantCondition.CalculateAccelerationDueToGravity(vehicleData.body, vehicleData.altitude) * Math.Cos(vehicleData.stableCondition.stableAoA * Math.PI / 180) / vehicleData.nominalVelocity, 3, 0);
+            A.Add(effg / u0, 3, 0);
             A.Add(1, 1, 3);
-
 
             A.PrintToConsole();                //We should have an array that looks like this:
 
@@ -127,15 +137,9 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
              *       |  [   Lb    ,    Lp   ,      Lr       ,          0          ]
              *       |  [   Nb    ,    Np   ,      Nr       ,          0          ]
              *      \ / [    0    ,    1    ,      0        ,          0          ]
-             *       V                              //And one that looks like this:
-             *
-             *          [ Z e ]
-             *          [ X e ]
-             *          [ M e ]
-             *          [  0  ]
-             *
-             *
+             *       V  
              */
+
             RungeKutta4 transSolve = new RungeKutta4(endTime, initDt, A, InitCond);
             transSolve.Solve();
 
@@ -170,33 +174,38 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
         public GraphData RunTransientSimLongitudinal(StabilityDerivOutput vehicleData, double endTime, double initDt, double[] InitCond)
         {
             SimMatrix A = new SimMatrix(4, 4);
-            SimMatrix B = new SimMatrix(1, 4);
-
-            A.PrintToConsole();
 
             int i = 0;
             int j = 0;
-            int num = 0;
             double[] Derivs = new double[27];
 
-            for (int k = 0; k < vehicleData.stabDerivs.Length; k++)
+            vehicleData.stabDerivs.CopyTo(Derivs, 0);
+
+            double MAC2u = vehicleData.MAC / (2 * vehicleData.nominalVelocity);
+            double effg = _instantCondition.CalculateEffectiveGravity(vehicleData.body, vehicleData.altitude, vehicleData.nominalVelocity);
+
+            FARLogger.Info("MAC/(2u)= " + MAC2u);
+            FARLogger.Info("effg= " + effg);
+
+            // Rodhern: For possible backward compability the rotation (moment) derivatives can be
+            //  scaled by "mac/(2u)" (pitch) and "b/(2u)" (roll and yaw).
+            for (int h = 9; h <= 11; h++)
+                Derivs[h] = Derivs[h] * MAC2u;
+
+            Derivs[9] = Derivs[9] + vehicleData.nominalVelocity;
+
+            for (int k = 3; k < 15 && k < Derivs.Length; k++)
             {
-                double f = vehicleData.stabDerivs[k];
-                if (num < 3 || num >= 15)
+                double f = Derivs[k];
+
+                if (i <= 2)
                 {
-                    num++;              //Avoid Ix, Iy, Iz
-                    continue;
+                    FARLogger.Info("A[" + i + "," + j + "]= f_" + k + " = " + f);
+                    A.Add(f, i, j);
                 }
                 else
-                    num++;
-                FARLogger.Info(i + "," + j);
-                if (i <= 2)
-                    if (num == 10)
-                        A.Add(f + vehicleData.nominalVelocity, i, j);
-                    else
-                        A.Add(f, i, j);
-                else
-                    B.Add(f, 0, j);
+                    FARLogger.Debug("Ignore B[0," + j + "]= " + f);
+
                 if (j < 2)
                     j++;
                 else
@@ -204,26 +213,25 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
                     j = 0;
                     i++;
                 }
-
             }
-            A.Add(-_instantCondition.CalculateAccelerationDueToGravity(vehicleData.body, vehicleData.altitude), 3, 1);
+            A.Add(-effg, 3, 1);
             A.Add(1, 2, 3);
-
 
             A.PrintToConsole();                //We should have an array that looks like this:
 
-            /*             i --------------->
+            /*            i --------------->
              *       j  [ Z w , Z u , Z q  + u,  0 ]
              *       |  [ X w , X u , X q     , -g ]
              *       |  [ M w , M u , M q     ,  0 ]
              *      \ / [  0  ,  0  ,  1      ,  0 ]
-             *       V                              //And one that looks like this:
-             *
+             *       V  
+             */
+                                               //And one that looks like this: (Unused)
+            /*
              *          [ Z e ]
              *          [ X e ]
              *          [ M e ]
              *          [  0  ]
-             *
              *
              */
 
@@ -257,7 +265,6 @@ namespace FerramAerospaceResearch.FARGUI.FAREditorGUI.Simulation
 
             return lines;
         }
-
 
         private void ScaleAndClampValues(double[] yVal, double scalingFactor, double clampValue)
         {
